@@ -1,0 +1,219 @@
+---
+title: "LC-MS data annotation using mWISE"
+author: "Vignette Author"
+package: PackageName
+output: 
+  rmarkdown::html_vignette:
+    toc: TRUE
+vignette: >
+  %\VignetteIndexEntry{LC-MS data annotation using mWISE}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}  
+
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+mWISE (metabolomics Wise Inference of Speck Entities) is an R package that provides tools for context-based annotation of untargeted LC-MS data. Several computational strategies have been proposed to overcome untargeted LC-MS data annotation, which is still considered a major bottleneck.
+
+mWISE integrates several strategies to provide a fast annotation of peak-intensity tables. It consists of three main steps aimed at i) matching mass-to-charge ratio values to KEGG database, ii) clustering and filtering the potential KEGG candidates and iii) building a final prioritized list using diffusion in networks. 
+
+mWISE R package provides individual functions to perform each of the steps, as well as a wrapper function to easily conduct the whole annotation pipeline. In here, an overview of all the possibilities offered by mWISE is shown. 
+
+## Adducts and in source fragments configuration
+
+mWISE uses adducts and in source fragments knowledge to perform a fast matching to KEGG database. The default table of adducts and fragments is built using information from CAMERA R package, H. Tong et al., and cliqueMS. 
+
+Below, the table used to perform the maching is loaded and the first rows are shown. The columns contain the KEGG identifiers, their exact masses, different adducts and fragments, the acquisition mode polarity of each adduct or fragment and the mass-to-charge ratio expected. 
+
+```{r setup}
+library(mWISE)
+
+data("Cpd.Add")
+head(Cpd.Add)
+```
+
+The `Cpd.Add` table is built from the `Info.Add` table, shown below. The column named `quasi` indicates which adducts or fragments are considered quasi-moleculars and the columns named `log10freq` and `Freq` indicate the observed frequencies of the adducts and fragments available in CliqueMS R package. 
+
+```{r }
+data("Info.Add")
+head(Info.Add)
+```
+
+The function `CpdaddPreparation` allows to compute the `Cpd.Add` table. It eases the addition of new adducts or fragments not available in mWISE, by providing a table with at least the name, the number of molecules, the charge and the mass difference of each new adduct. 
+Below, an example where only quasi-molecular adducts are considered is shown. 
+
+```{r }
+Info.Add.subset <- Info.Add[Info.Add$quasi==1,]
+Info.Add.subset
+```
+
+```{r }
+Cpd.Add.built <- CpdaddPreparation(Info.Add = Info.Add.subset, do.Par = TRUE, nClust = 2)
+head(Cpd.Add.built)
+```
+
+## Annotating LC-MS data step by step
+
+Here below, the different steps of mWISE will be shown.
+
+### Matching stage
+
+An untargeted LC-MS example dataset is available in mWISE. The Trypanosoma dataset is organized as a list with the positive acquisiton mode objects and another list with the negative acquisition mode objects. Each list contains a slot with the `Input` and the `Output` objects. The `Input` data frame contains the peak-intensity matrix and the `output` data frame contains the reference peaks identified.
+
+```{r}
+data("Trypanosoma.dataset")
+Peak.List <- Trypanosoma.dataset$Negative$Input
+df.Ref <- Trypanosoma.dataset$Negative$Output
+```
+
+Once the example dataset is loaded, the `matchingStage` function can be applied. If the `Cpd.Add` argument is not specified, the default table will be used. In this case, the function is applied with all its arguments as default. The result consists of a list with the input peak-intensity matrix (`Peak.List`) and a table containing the resulting annotated table (`Peak.Cpd`). 
+
+```{r}
+Annotated.List <- matchingStage(Peak.List = Peak.List, 
+                                polarity = "negative", 
+                                do.Par = TRUE, nClust = 2)
+
+Annotated.Tab <- Annotated.List$Peak.Cpd
+nrow(Annotated.Tab)
+```
+
+A subset of the adducts or fragments available in mWISE can be selected for the matching stage. This is strongly recommended, since the expertise of the users with the experimental settings of their studies may highly improve the final annotation results.
+The function `printAdducts` eases its selection, as it can be seen here below. 
+ 
+```{r}
+printAdducts(pol = "negative")
+selectedAdds <- printAdducts(pol = "negative")[c(4:5,17,18,22:25,75,76)]
+selectedAdds
+```
+
+The new selection of adducts can be easily introduced in the `matchingStage` function through the `Add.List` parameter.
+
+```{r}
+Annotated.List <- matchingStage(Peak.List = Peak.List, 
+                                polarity = "negative", 
+                                Add.List = selectedAdds, 
+                                do.Par = TRUE, nClust = 2)
+nrow(Annotated.List$Peak.Cpd)
+```
+
+It can be seen that the number of proposed candidates is highly reduced, which improves the next steps' accuracy. 
+
+### Filtering stage
+
+First, the features that may come from the same metabolite are clustered using the `featuresClustering` function. In the `Intensity.idx` parameter, a vector with the index of the columns containing intensity information must be introduced.
+Then, the result is merged to the annotated table and the different clusters are indicated in a column named `pcgroup`. 
+
+```{r}
+Intensity.idx <- seq(27,38)
+
+clustered <- featuresClustering(Peak.List = Peak.List, 
+                                Intensity.idx = Intensity.idx, 
+                                do.Par = TRUE, nClust = 6)
+
+Annotated.Tab <- merge(Annotated.Tab,
+                       clustered$Peak.List[,c("Peak.Id", "pcgroup")],
+                       by = "Peak.Id")
+```
+
+The object containing the potential candidates that result from the matching stage and the clustering of the peaks is introduced in the `clusterBased.filter` function. A list of characters indicating quasi-molecular adducts can be introduced in the parameter `Add.Id`. If not, the quasi-molecular adducts available in mWISE, together with the adducts with an observed frequency higher than 0.1 will be used for filtering. The user can modify the minimum observed frequency using the `Freq` argument. 
+
+```{r}
+MH.Tab <- clusterBased.filter(df = Annotated.Tab, 
+                              polarity = "negative")
+```
+
+### Diffusion prioritization
+
+The different diffusion inputs can be computed using the `diffusion.input` function. The `input.type` argument can be set to `probability` or `binary`. If `Unique.Annotation = TRUE`, the diffusion input will be computed only using the peaks with a unique candidate. 
+
+```{r}
+Input.diffusion <- diffusion.input(df = MH.Tab,
+                                   input.type = "probability",
+                                   Unique.Annotation = FALSE,
+                                   do.Par = TRUE, nClust = 6)
+```
+
+The `set.diffusion` function applies diffusion in graphs using the input previously built. The `z` score normalizes the diffusion scores by taking into account the topology of the graph. On the other hand, when `scores = raw`, no normalization is applied. 
+
+```{r}
+diff.Cpd <- set.diffusion(df = Input.diffusion,
+                          scores = "z",
+                          graph.name = "fella",
+                          do.Par = TRUE, 
+                          nClust = 6)
+
+Diffusion.Results <- diff.Cpd$Diffusion.Results
+```
+
+The `recoveringPeaks` function recovers the peaks that have been completely removed by the cluster-based filter.
+
+```{r}
+MH.Tab <- recoveringPeaks(df = Annotated.Tab, 
+                          polarity = "negative")
+
+Diff.Tab <- merge(x = MH.Tab, 
+                  y = Diffusion.Results,
+                  by = "Compound", 
+                  all.x = TRUE)
+
+```
+
+Finally, the diffusion prioritized table is built using the `finalResults` function. 
+The `modifiedTabs` prepare the tables that result from the matching stage and the filtering stage, by grouping those peaks where the same candidate has been proposed more than once. This can happen when a compound can result in the same mass-to-charge ratio through more than one adduct or fragment. 
+
+```{r}
+Ranked.Tab <- finalResults(Diff.Tab = Diff.Tab, 
+                           score = "z")
+
+Annotated.Tab2 <- modifiedTabs(df = Annotated.Tab, 
+                               do.Par = TRUE,
+                               nClust = 2)
+
+MH.Tab2 <- modifiedTabs(df = MH.Tab, 
+                        do.Par = TRUE, 
+                        nClust = 2)
+
+Annotated.dataset <- list(Annotated.Tab = Annotated.Tab2,
+                          Clustered.Tab = clustered,
+                          MH.Tab = MH.Tab2,
+                          Diff.Tab = Diff.Tab,
+                          Ranked.Tab = Ranked.Tab)
+```
+
+
+## Annotating LC-MS data at once
+
+The wrapper function `mWISE.annotation` applies the whole mWISE pipeline at once. 
+
+```{r}
+
+Annotated.List <- mWISE.annotation(Peak.List = Peak.List, 
+                                   polarity = "negative", Cpd.Add = Cpd.Add,
+                                   #Add.List = selectedAdds,
+                                   diffusion.input.type = "probability", 
+                                   score = "z", Add.Id = c("M-H", "M+Cl"),
+                                   Unique.Annotation = FALSE,
+                                   graph.name = "fella", 
+                                   Intensity.idx = Intensity.idx, 
+                                   do.Par = TRUE, nClust = 2)
+
+```
+
+
+## Evaluating the performance
+
+Finally, the `performanceEvaluation` function can be used to compute the performance metrics, using the benchmark data frame `df.Ref`. The argument `top.cmps` defines the top K candidates considered for the evaluation. 
+
+```{r}
+performanceEvaluation(Annotated.dataset = Annotated.List, df.Ref = df.Ref, top.cmps = 3)
+```
+
+
