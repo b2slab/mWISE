@@ -4,8 +4,6 @@
 #' @description
 #' Function \code{k.optimization} optimizes the number of clusters. This value will be used to define the number
 #' of eigenvectors considered in the spectral clustering.
-#' @example
-#' k <- k.optimization(pca.to.tune, data.prep, IData, nrow.List, do.Par, nClust)
 #' @param pca.to.tune
 #' PCA to perform the spectral clustering.
 #' @param data.prep

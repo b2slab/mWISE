@@ -17,12 +17,12 @@ diffusion.input(
   background = NULL,
   Unique.Annotation = FALSE,
   do.Par = TRUE,
-  nClust = detectCores() - 1
+  nClust = 2
 )
 
-diffusion.input.Binary(df, do.Par = TRUE, nClust = detectCores() - 1)
+diffusion.input.Binary(df, do.Par = TRUE, nClust = 2)
 
-diffusion.input.probability(df, do.Par = TRUE, nClust = detectCores() - 1)
+diffusion.input.probability(df, do.Par = TRUE, nClust = 2)
 
 finalResults(Diff.Tab, score, do.Par = TRUE, nClust)
 
@@ -33,7 +33,7 @@ set.diffusion(
   K = NULL,
   scores = c("raw", "ber_s", "z"),
   do.Par = TRUE,
-  nClust = detectCores() - 1
+  nClust = 2
 )
 }
 \arguments{
@@ -62,7 +62,7 @@ by only considering those peaks with a unique annotation (Def: FALSE).}
 \item{score}{Method of diffusion. Possible values are: "raw", "ber_s" and "z"}
 
 \item{graph}{Diffusion graph where nodes correspond to KEGG compounds.
-If NULL, the diffusion graph indicated in \param{graph.name} will be loaded.}
+If NULL, the diffusion graph indicated in \code{graph.name} will be loaded.}
 
 \item{graph.name}{Name of the diffusion graphs available in mWISE. The options are "fella", "RClass3levels" or "RClass2levels" (Def: "fella").}
 

@@ -2,15 +2,14 @@
 #' @title Function to evaluate mWISE performance
 #' @description
 #' Function \code{performanceEvaluation} computes performance metrics when a reference table is available.
-#' @example
-#' Metrics <- performanceEvaluation(Annotated.dataset,
-#'                                  df.Ref)
 #' @param Annotated.dataset
 #' Object returned by \code{mWISE.annotation} function.
 #' @param df.Ref
 #' Reference data frame. It should contain a column named "Peak.Id"
 #' with a peak identifier that corresponds to the mWISE Peak identifier, and a column named "Kegg"
 #' with the reference KEGG identifiers.
+#' @param top.cmps
+#' Number of top compounds to be considered in performance evaluation.
 #' @param do.Par
 #' TRUE if parallel computing is required. Def: TRUE.
 #' @param nClust

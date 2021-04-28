@@ -5,9 +5,8 @@
 #' Function \code{matchingStage} performs a fast matching of the peak-intensity table to KEGG database
 #' using adducts and fragments knowledge.
 #' @examples
-#' Annotated.Table <- matchingStage(Peak.List, force.mass.range = TRUE, mass.range.type = "ppm.mode",
-#' mz.range = NULL, ppm = 10, polarity, Add.List = NULL, Info.Add = NULL,
-#' do.Par = TRUE, nClust)
+#' matchingStage <- function(Peak.List, polarity = "positive", 
+#' do.Par = TRUE, nClust = 2)
 #' @param Peak.List
 #' Data frame containing the LC-MS features.
 #' Columns should contain:
@@ -44,7 +43,7 @@
 
 matchingStage <- function(Peak.List, force.mass.range = TRUE, mass.range.type = "ppm.mode",
                           mz.range = NULL, ppm = 10, polarity = "positive",
-                          Add.List = NULL, Cpd.Add = NULL,
+                          Add.List = NULL, Cpd.Add,
                           do.Par = TRUE, nClust){
 
   # Formatting Peak.List
@@ -52,20 +51,24 @@ matchingStage <- function(Peak.List, force.mass.range = TRUE, mass.range.type = 
   Peak.List <- mass.range.format(Peak.List = Peak.List, force.mass.range = force.mass.range,
                                  mass.range.type = mass.range.type, mz.range = mz.range, ppm = ppm)
 
-  if (is.null(Cpd.Add) & is.null(Add.List)) {
-    Cpd.Add <- mWISE::Cpd.Add
-  } else if (is.null(Cpd.Add) & (!is.null(Add.List))) {
-    Cpd.Add <- mWISE::Cpd.Add
+  # if (is.null(Cpd.Add) & is.null(Add.List)) {
+  #   Cpd.Add <- mWISE::Cpd.Add
+  # } else if (is.null(Cpd.Add) & (!is.null(Add.List))) {
+  #   Cpd.Add <- mWISE::Cpd.Add
+  #   Cpd.Add <- Cpd.Add[as.character(Cpd.Add$Add.name) %in% Add.List,]
+  # } else{
+  #   Cpd.Add <- Cpd.Add
+  # }
+  if (!is.null(Add.List)){
     Cpd.Add <- Cpd.Add[as.character(Cpd.Add$Add.name) %in% Add.List,]
-  } else{
-    Cpd.Add <- Cpd.Add
   }
+  
   Cpd.Add <- Cpd.Add[Cpd.Add$Polarity %in% polarity,]
 
   if (max(Peak.List$mzmax)>2000){
     # m/z<2000
     Peak.List1 <- Peak.List[Peak.List$mzmax<=2000,]
-    Cpd.Add1 <- subset(Cpd.Add, mz.Add<=2000)
+    Cpd.Add1 <- subset(Cpd.Add, Cpd.Add$mz.Add<=2000)
     gr.PeakList1 <- GenomicRanges::GRanges(seqnames = 'dummy', strand = '*',
                             ranges = IRanges::IRanges(start = round(Peak.List1$mzmin*10^6, 0),
                                              end = round(Peak.List1$mzmax*10^6, 0)))
@@ -76,7 +79,7 @@ matchingStage <- function(Peak.List, force.mass.range = TRUE, mass.range.type = 
                       Cpd.Add1[overlaps1$subjectHits, c("Compound", "exact_mass", "Add.name")])
     # m/z>2000
     Peak.List2 <- Peak.List[Peak.List$mz>2000,]
-    Cpd.Add2 <- subset(Cpd.Add, mz.Add>2000)
+    Cpd.Add2 <- subset(Cpd.Add, Cpd.Add$mz.Add>2000)
     gr.PeakList2 <- GenomicRanges::GRanges(seqnames = 'dummy', strand = '*',
                             ranges = IRanges::IRanges(start = round(Peak.List2$mzmin*10^4, 0),
                                              end = round(Peak.List2$mzmax*10^4, 0)))
@@ -90,7 +93,7 @@ matchingStage <- function(Peak.List, force.mass.range = TRUE, mass.range.type = 
 
   } else {
     # Formatting Peak.List
-    Cpd.Add <- subset(Cpd.Add, mz.Add<=2000)
+    Cpd.Add <- subset(Cpd.Add, Cpd.Add$mz.Add<=2000)
     gr.PeakList <- GenomicRanges::GRanges(seqnames = 'dummy', strand = '*',
                            ranges = IRanges::IRanges(start = round(Peak.List$mzmin*10^6, 0),
                                             end = round(Peak.List$mzmax*10^6, 0)))

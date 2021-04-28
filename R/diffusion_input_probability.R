@@ -3,8 +3,6 @@
 #' @title Functions to apply diffusion in graphs
 #' @description
 #' Function \code{diffusion.input.probability} computes the probability diffusion input score.
-#' @example
-#' Diffusion.Input<-diffusion.input.probability(df = Peak.Cpd,do.Par = T,  nClust = detectCores()-1)
 #' @param df
 #' Data frame containing the potential candidates. It is recommended to use the
 #' data frame resulted from mWISE clustered-based filtering. Columns may contain "Peak.Id" for a peak identifier and
@@ -17,7 +15,7 @@
 #' Function \code{diffusion.input.probability} returns a data frame containing the probability diffusion input.
 #' @export
 
-diffusion.input.probability <- function(df, do.Par = TRUE, nClust = detectCores()-1) {
+diffusion.input.probability <- function(df, do.Par = TRUE, nClust = 2) {
   cat("Computing diffusion input...")
   Prob.Tabs <- plyr::ldply(as.character(unique(df$Compound)), function(cpd){
     dx <- df[df$Compound %in% cpd,]

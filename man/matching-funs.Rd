@@ -24,7 +24,7 @@ matchingStage(
   ppm = 10,
   polarity = "positive",
   Add.List = NULL,
-  Info.Add = NULL,
+  Cpd.Add,
   do.Par = TRUE,
   nClust
 )
@@ -59,7 +59,8 @@ or m/z uncertainty ("mz.range") (Def: "ppm.mode").}
 
 \item{Add.List}{List of adducts or fragments to consider.}
 
-\item{Info.Add}{Data frame with adducts information. If NULL, the default information is used.}
+\item{Cpd.Add}{Compound to adduct matrix. It can be built using \code{CpdaddPreparation} function.
+If NULL, the default information will be used.}
 
 \item{do.Par}{Logical. If parallel computing is required (Def: TRUE).}
 
@@ -91,7 +92,6 @@ using adducts and fragments knowledge.
 Function \code{mz.ppm.converter} transforms the user-defined tolerance from ppm to mz uncertainty or viceversa.
 }
 \examples{
-Annotated.Table <- matchingStage(Peak.List, force.mass.range = TRUE, mass.range.type = "ppm.mode",
-mz.range = NULL, ppm = 10, polarity, Add.List = NULL, Info.Add = NULL,
-do.Par = TRUE, nClust)
+matchingStage <- function(Peak.List, polarity = "positive", 
+do.Par = TRUE, nClust = 2)
 }

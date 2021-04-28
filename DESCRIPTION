@@ -6,15 +6,12 @@ Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+License: GPL-3
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 RoxygenNote: 7.1.1
 Depends: 
     R (>= 2.10)
-Suggests: 
-    knitr,
-    rmarkdown,
-    BiocStyle
 VignetteBuilder: knitr
-
+Suggests: BiocStyle, knitr, rmarkdown
+Imports: doParallel, GenomicRanges, dbscan, diffuStats, plyr, igraph, IRanges, stats

@@ -5,8 +5,6 @@
 #' Function \code{featuresClustering} performs spectral clustering to group those features
 #' that come from the same metabolite. It uses \code{dataPrep}, \code{.LaplacianNg}, \code{k.optimization}
 #' and \code{eps.optimization} functions.
-#' @example
-#' clustered.Table <- featuresClustering(Peak.List, Intensity.idx, do.Par = TRUE, nClust)
 #' @param Peak.List
 #' Data frame containing the LC-MS features.
 #' Columns should contain:

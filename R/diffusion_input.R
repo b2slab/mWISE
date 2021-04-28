@@ -4,8 +4,6 @@
 #' @description
 #' Function \code{diffusion.input} computes the diffusion input score to perform diffusion in graphs.
 #' It uses the functions \code{diffusion.input.Binary} and \code{diffusion.input.probability}
-#' @example
-#' Diffusion.Input<-Diffusion.Input(df = Peak.Cpd,do.Par = T,  nClust = 3)
 #' @param df
 #' Data frame containing the potential candidates. It is recommended to use the
 #' data frame resulted from mWISE clustered-based filtering. Columns may contain "Peak.Id" for a peak identifier and
@@ -31,7 +29,7 @@
 #' @export
 
 diffusion.input<-function(df, input.type = "probability", background = NULL, Unique.Annotation = FALSE,
-                          do.Par = TRUE, nClust = detectCores()-1){
+                          do.Par = TRUE, nClust = 2){
   df.Input <- df
   if(do.Par)
     doParallel::registerDoParallel(nClust)

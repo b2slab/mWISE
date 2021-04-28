@@ -5,10 +5,6 @@
 #' Function \code{set.diffusion} diffuses heat in a specific
 #' Kernel given a matrix of compounds and its
 #' diffusion input score.
-#' @example
-#' diffusion.results<-set.diffusion(df,graph,scores=c("raw", "ber_s", "z"),
-#'                                  do.Par = TRUE, nClust = detectCores()-1 )
-#'
 #' @param df
 #' Object returned by the \code{diffusion.input} function. It is a
 #' list containing the diffusion input matrix (data frame containing a column named "Compound"
@@ -35,7 +31,7 @@
 
 set.diffusion<-function(df, graph = NULL, graph.name = "fella",
                         K = NULL, scores = c("raw", "ber_s", "z"),
-                        do.Par = TRUE, nClust = detectCores()-1){
+                        do.Par = TRUE, nClust = 2){
 
   if(do.Par)
     doParallel::registerDoParallel(nClust)
@@ -73,11 +69,11 @@ set.diffusion<-function(df, graph = NULL, graph.name = "fella",
   # Discarded.Compounds<-df %>%
   #   subset(!Compound %in% V(g.metab)$name) %>%
   #   .$Compound %>% unique() %>% as.character()
-  subs.df <- subset(df, !Compound %in% igraph::V(g.metab)$name)
+  subs.df <- subset(df, !(df$Compound %in% igraph::V(g.metab)$name))
   Discarded.Compounds <- as.character(unique(subs.df$Compound))
   cat(length(Discarded.Compounds),"- Compounds aren't in the Kernel","\n")
   #df<-df %>% subset(Compound %in% V(g.metab)$name)
-  df<-subset(df, Compound %in% igraph::V(g.metab)$name)
+  df<-subset(df, df$Compound %in% igraph::V(g.metab)$name)
   df_input<-df
   cat("Implementing diffusion on:",dim(df_input)[1],"peaks...")
   # if (any(meta.params == c("binary"))){

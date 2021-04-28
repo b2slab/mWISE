@@ -11,8 +11,6 @@
 #' Vector containing the retention times.
 #' @param Rt.05
 #' Retention time value to get a similarity of 0.5.
-#' @param mat
-#' Matrix to compute the normalized Laplacian matrix.
 #' @return
 #' Function \code{dataPrep} returns a list containing the Gaussian similarity matrices for the retention time differences
 #' and the intensities correlation.

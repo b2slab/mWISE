@@ -1,0 +1,19 @@
+#' @name Info.Add
+#' @docType data
+#' @title Data frame with adducts/fragments knowledge
+#' @description This data provides a data frame containing information about
+#' adducts and fragments to build a \code{Cpd.Add} table.
+#' @usage data(Info.Add)
+#' @format An object of class data frame with 269 rows and 8 columns.
+#' @source Generated using information from CAMERA, cliqueMS and Tong et al.
+#' @references 
+#' Tong, H. et al. \emph{Automated Data Massaging, Interpreta-tion,  and E-Mailing 
+#' Modules for High Throughput Open Access Mass Spectrometry} 
+#' American Society for Mass Spectrometry, 1999
+#' Senan, O. et al. \emph{CliqueMS:  A  computational  tool  for  annotating 
+#' in-source metabolite ions from LC-MS untargeted metabolomics data based on a 
+#' coelution similarity network} Bioinformatics, 2019
+#' Kuhl, C. et al. \emph{ CAMERA: Anintegrated  strategy  for  compound  spectra  
+#' extraction  and  annotation  of  liquid  chro-matography/mass spectrometry data sets}
+#' Analytical chemistry, 2012
+"Info.Add"

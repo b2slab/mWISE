@@ -17,7 +17,7 @@
 #' Function \code{diffusion.input.Binary} returns a data frame containing the binary diffusion input.
 #' @export
 
-diffusion.input.Binary<-function(df, do.Par = TRUE, nClust = detectCores()-1 ){
+diffusion.input.Binary<-function(df, do.Par = TRUE, nClust = 2){
   cat("Computing diffusion input...")
   cat("DONE!","\n")
   return(data.frame(Compound = unique(df$Compound),

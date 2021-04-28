@@ -2,11 +2,6 @@
 #' @title Function to perform the complete annotation pipeline of mWISE
 #' @description
 #' Wrapper function that performs the complete workflow of mWISE to annotate a peak-intensity matrix.
-#' @example
-#' mWISE.annotated.Table <- mWISE.annotation(Peak.List, ppm = 10, polarity = "positive",
-#'                          diffusion.input.type = "probability", score = "z", Intensity.idx,
-#'                          graph.name, nClust, do.Par = TRUE)
-#'
 #' @param Peak.List
 #' Data frame containing the LC-MS features.
 #' Columns should contain:
@@ -31,7 +26,6 @@
 #' List of adducts or fragments to consider.
 #' @param Cpd.Add
 #' Compound to adduct matrix. It can be built using \code{CpdaddPreparation} function.
-#' If NULL, the default information will be used.
 #' @param Intensity.idx
 #' Numeric vector indicating the column index for the intensities
 #' @param Rt.05
@@ -54,7 +48,7 @@
 #' by only considering those peaks with a unique annotation (Def: FALSE).
 #' @param graph
 #' Diffusion graph where nodes correspond to KEGG compounds.
-#' If NULL, the diffusion graph indicated in \param{graph.name} will be loaded.
+#' If NULL, the diffusion graph indicated in \code{graph.name} will be loaded.
 #' @param graph.name
 #' Name of the diffusion graphs available in mWISE. The options are "fella", "RClass3levels" or "RClass2levels" (Def: "fella").
 #' @param K
@@ -72,13 +66,16 @@
 #' @export
 
 mWISE.annotation <- function(Peak.List, force.mass.range = TRUE, mass.range.type = "ppm.mode",
-                             mz.range = NULL, ppm = 10, polarity = "positive", Add.List = NULL, Cpd.Add = NULL,
+                             mz.range = NULL, ppm = 10, polarity = "positive", Add.List = NULL, Cpd.Add,
                              Intensity.idx, Rt.05 = 5, Freq = 0.50, Add.Id = NULL,
                              background = NULL,  diffusion.input.type = "probability", Unique.Annotation = FALSE,
                              graph = NULL, K = NULL, score = "z", graph.name = "fella",
-                             nClust, do.Par = TRUE) {
+                             nClust = 2, do.Par = TRUE) {
 
-  doParallel::registerDoParallel(nClust)
+  if (do.Par){
+    doParallel::registerDoParallel(nClust)
+  }
+  
   Annotated.List <- matchingStage(Peak.List = Peak.List, force.mass.range = force.mass.range,
                                   mass.range.type = mass.range.type, mz.range = mz.range,
                                   ppm = ppm, polarity = polarity, Add.List = Add.List,

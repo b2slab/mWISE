@@ -9,7 +9,7 @@
 printAdducts(pol = c("positive", "negative"))
 }
 \arguments{
-\item{polarity}{Acquisition mode. It can be "positive", "negative" or both.}
+\item{pol}{Acquisition mode. It can be "positive", "negative" or both.}
 }
 \description{
 Function \code{printAdducts} returns a list of all the available adducts and fragments in mWISE for a given polarity.

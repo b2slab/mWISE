@@ -1,15 +1,13 @@
 ---
 title: "LC-MS data annotation using mWISE"
 author: "Vignette Author"
-package: PackageName
+package: mWISE
 output: 
-  rmarkdown::html_vignette:
-    toc: TRUE
+  BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{LC-MS data annotation using mWISE}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}  
-
+    %\VignetteIndexEntry{LC-MS data annotation using mWISE}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}  
 ---
 
 ```{r, include = FALSE}
@@ -31,13 +29,13 @@ mWISE R package provides individual functions to perform each of the steps, as w
 
 mWISE uses adducts and in source fragments knowledge to perform a fast matching to KEGG database. The default table of adducts and fragments is built using information from CAMERA R package, H. Tong et al., and cliqueMS. 
 
-Below, the table used to perform the maching is loaded and the first rows are shown. The columns contain the KEGG identifiers, their exact masses, different adducts and fragments, the acquisition mode polarity of each adduct or fragment and the mass-to-charge ratio expected. 
+The table used to perform the maching stage (`Cpd.Add`) is built using KEGG database knowledge. Below, a data frame containing KEGG identifiers and their exact masses is shown.
 
 ```{r setup}
 library(mWISE)
 
-data("Cpd.Add")
-head(Cpd.Add)
+data("KeggDB")
+head(KeggDB)
 ```
 
 The `Cpd.Add` table is built from the `Info.Add` table, shown below. The column named `quasi` indicates which adducts or fragments are considered quasi-moleculars and the columns named `log10freq` and `Freq` indicate the observed frequencies of the adducts and fragments available in CliqueMS R package. 
@@ -48,16 +46,11 @@ head(Info.Add)
 ```
 
 The function `CpdaddPreparation` allows to compute the `Cpd.Add` table. It eases the addition of new adducts or fragments not available in mWISE, by providing a table with at least the name, the number of molecules, the charge and the mass difference of each new adduct. 
-Below, an example where only quasi-molecular adducts are considered is shown. 
+Below, a reduced `Cpd.Add` table is built only using 2000 KEGG identifiers.
 
 ```{r }
-Info.Add.subset <- Info.Add[Info.Add$quasi==1,]
-Info.Add.subset
-```
-
-```{r }
-Cpd.Add.built <- CpdaddPreparation(Info.Add = Info.Add.subset, do.Par = TRUE, nClust = 2)
-head(Cpd.Add.built)
+Cpd.Add <- CpdaddPreparation(KeggDB = KeggDB[14500:15500,], do.Par = FALSE)
+head(Cpd.Add)
 ```
 
 ## Annotating LC-MS data step by step
@@ -70,16 +63,18 @@ An untargeted LC-MS example dataset is available in mWISE. The Trypanosoma datas
 
 ```{r}
 data("Trypanosoma.dataset")
-Peak.List <- Trypanosoma.dataset$Negative$Input
+Peak.List <- Trypanosoma.dataset$Negative$Input[250:500,]
 df.Ref <- Trypanosoma.dataset$Negative$Output
+df.Ref <- df.Ref[df.Ref$Peak.Id %in% Peak.List$Peak.Id,]
 ```
 
 Once the example dataset is loaded, the `matchingStage` function can be applied. If the `Cpd.Add` argument is not specified, the default table will be used. In this case, the function is applied with all its arguments as default. The result consists of a list with the input peak-intensity matrix (`Peak.List`) and a table containing the resulting annotated table (`Peak.Cpd`). 
 
 ```{r}
 Annotated.List <- matchingStage(Peak.List = Peak.List, 
+                                Cpd.Add = Cpd.Add,
                                 polarity = "negative", 
-                                do.Par = TRUE, nClust = 2)
+                                do.Par = FALSE)
 
 Annotated.Tab <- Annotated.List$Peak.Cpd
 nrow(Annotated.Tab)
@@ -98,9 +93,10 @@ The new selection of adducts can be easily introduced in the `matchingStage` fun
 
 ```{r}
 Annotated.List <- matchingStage(Peak.List = Peak.List, 
+                                Cpd.Add = Cpd.Add,
                                 polarity = "negative", 
                                 Add.List = selectedAdds, 
-                                do.Par = TRUE, nClust = 2)
+                                do.Par = FALSE)
 nrow(Annotated.List$Peak.Cpd)
 ```
 
@@ -116,7 +112,7 @@ Intensity.idx <- seq(27,38)
 
 clustered <- featuresClustering(Peak.List = Peak.List, 
                                 Intensity.idx = Intensity.idx, 
-                                do.Par = TRUE, nClust = 6)
+                                do.Par = FALSE)
 
 Annotated.Tab <- merge(Annotated.Tab,
                        clustered$Peak.List[,c("Peak.Id", "pcgroup")],
@@ -132,13 +128,21 @@ MH.Tab <- clusterBased.filter(df = Annotated.Tab,
 
 ### Diffusion prioritization
 
+For the diffusion stage, we will now use the sample graph provided by FELLA R package.
+
+```{r}
+data("sample.graph")
+g.metab <- igraph::as.undirected(sample.graph)
+```
+
+
 The different diffusion inputs can be computed using the `diffusion.input` function. The `input.type` argument can be set to `probability` or `binary`. If `Unique.Annotation = TRUE`, the diffusion input will be computed only using the peaks with a unique candidate. 
 
 ```{r}
 Input.diffusion <- diffusion.input(df = MH.Tab,
                                    input.type = "probability",
                                    Unique.Annotation = FALSE,
-                                   do.Par = TRUE, nClust = 6)
+                                   do.Par = FALSE)
 ```
 
 The `set.diffusion` function applies diffusion in graphs using the input previously built. The `z` score normalizes the diffusion scores by taking into account the topology of the graph. On the other hand, when `scores = raw`, no normalization is applied. 
@@ -146,9 +150,8 @@ The `set.diffusion` function applies diffusion in graphs using the input previou
 ```{r}
 diff.Cpd <- set.diffusion(df = Input.diffusion,
                           scores = "z",
-                          graph.name = "fella",
-                          do.Par = TRUE, 
-                          nClust = 6)
+                          graph = g.metab,
+                          do.Par = FALSE)
 
 Diffusion.Results <- diff.Cpd$Diffusion.Results
 ```
@@ -156,8 +159,8 @@ Diffusion.Results <- diff.Cpd$Diffusion.Results
 The `recoveringPeaks` function recovers the peaks that have been completely removed by the cluster-based filter.
 
 ```{r}
-MH.Tab <- recoveringPeaks(df = Annotated.Tab, 
-                          polarity = "negative")
+MH.Tab <- recoveringPeaks(Annotated.Tab = Annotated.Tab, 
+                          MH.Tab = MH.Tab)
 
 Diff.Tab <- merge(x = MH.Tab, 
                   y = Diffusion.Results,
@@ -171,15 +174,13 @@ The `modifiedTabs` prepare the tables that result from the matching stage and th
 
 ```{r}
 Ranked.Tab <- finalResults(Diff.Tab = Diff.Tab, 
-                           score = "z")
+                           score = "z", do.Par = FALSE)
 
 Annotated.Tab2 <- modifiedTabs(df = Annotated.Tab, 
-                               do.Par = TRUE,
-                               nClust = 2)
+                               do.Par = FALSE)
 
 MH.Tab2 <- modifiedTabs(df = MH.Tab, 
-                        do.Par = TRUE, 
-                        nClust = 2)
+                        do.Par = FALSE)
 
 Annotated.dataset <- list(Annotated.Tab = Annotated.Tab2,
                           Clustered.Tab = clustered,
@@ -195,15 +196,15 @@ The wrapper function `mWISE.annotation` applies the whole mWISE pipeline at once
 
 ```{r}
 
-Annotated.List <- mWISE.annotation(Peak.List = Peak.List, 
-                                   polarity = "negative", Cpd.Add = Cpd.Add,
-                                   #Add.List = selectedAdds,
-                                   diffusion.input.type = "probability", 
-                                   score = "z", Add.Id = c("M-H", "M+Cl"),
-                                   Unique.Annotation = FALSE,
-                                   graph.name = "fella", 
-                                   Intensity.idx = Intensity.idx, 
-                                   do.Par = TRUE, nClust = 2)
+Annotated.List <- mWISE.annotation(Peak.List = Peak.List,
+                                   polarity = "negative",
+                                   diffusion.input.type = "binary",
+                                   score = "raw",
+                                   Cpd.Add = Cpd.Add,
+                                   graph = g.metab,
+                                   Unique.Annotation = TRUE,
+                                   Intensity.idx = Intensity.idx,
+                                   do.Par = FALSE)
 
 ```
 
@@ -213,7 +214,7 @@ Annotated.List <- mWISE.annotation(Peak.List = Peak.List,
 Finally, the `performanceEvaluation` function can be used to compute the performance metrics, using the benchmark data frame `df.Ref`. The argument `top.cmps` defines the top K candidates considered for the evaluation. 
 
 ```{r}
-performanceEvaluation(Annotated.dataset = Annotated.List, df.Ref = df.Ref, top.cmps = 3)
+performanceEvaluation(Annotated.dataset = Annotated.dataset, df.Ref = df.Ref, top.cmps = 3)
 ```
 
 

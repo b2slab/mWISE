@@ -3,8 +3,6 @@
 #' @title Functions to apply cluster-based filtering
 #' @description
 #' Function \code{eps.optimization} optimizes the epsilon parameter of the dbscan algorithm.
-#' @example
-#' eps <- eps.optimization(pca.to.tune, data.prep, IData, k.tuned, nrow.List, do.Par, nClust)
 #' @param pca.to.tune
 #' PCA to perform the spectral clustering.
 #' @param data.prep

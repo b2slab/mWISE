@@ -6,9 +6,6 @@
 #' Function \code{finalResults} prepares the final table ranked by the diffusion scores computed.
 #' Function \code{modifiedTabs} prepares the tables that result from the matching stage and the
 #' filtering stage to evaluate their performance.
-#' @example
-#' Ranked.Tab <- finalResults(Diff.Tab = Diff.Tab, score = "z",
-#'                            do.Par = TRUE, nClust = detectCores()-1)
 #' @param Diff.Tab
 #' Data frame that results from the diffusion step.
 #' @param score
