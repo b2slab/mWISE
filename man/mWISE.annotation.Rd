@@ -35,62 +35,116 @@ Columns should contain:
 \item{Peak.Id}{ for a peak identifier}
 \item{mz}{ for a mass-to-charge ratio value}
 \item{rt}{ for the retention time}
-\item{Intensities for each sample}
+\item{Intensities}{ for each sample}
 }}
 
-\item{force.mass.range}{Logical. If TRUE, the m/z range is computed using the user-defined ppm tolerance or mz.range (Def: TRUE).}
+\item{force.mass.range}{Logical. If TRUE, the m/z range is computed 
+using the user-defined 
+ppm tolerance or mz.range (Def: TRUE).}
 
-\item{mass.range.type}{A character indicating if the m/z range computation is performed using tolerance in ppm ("ppm.mode").
+\item{mass.range.type}{A character indicating if the m/z range 
+computation is performed 
+using tolerance in ppm ("ppm.mode").
 or m/z uncertainty ("mz.range") (Def: "ppm.mode").}
 
-\item{mz.range}{If mass.range.type = "mz.range", it indicates the m/z range uncertainty (i.e. mz.range = 0.001).}
+\item{mz.range}{If mass.range.type = "mz.range", it 
+indicates the m/z range 
+uncertainty (i.e. mz.range = 0.001).}
 
-\item{ppm}{If mass.range.type = "ppm.mode", it indicates the tolerance in ppm (i.e. ppm = 10).}
+\item{ppm}{If mass.range.type = "ppm.mode", it 
+indicates the tolerance 
+in ppm (i.e. ppm = 10).}
 
-\item{polarity}{Acquisition mode of the study. It can be "positive" or "negative".}
+\item{polarity}{Acquisition mode of the study. 
+It can be "positive" or "negative".}
 
 \item{Add.List}{List of adducts or fragments to consider.}
 
-\item{Cpd.Add}{Compound to adduct matrix. It can be built using \code{CpdaddPreparation} function.}
+\item{Cpd.Add}{Compound to adduct matrix. It can be built using 
+\code{CpdaddPreparation} function.}
 
-\item{Intensity.idx}{Numeric vector indicating the column index for the intensities}
+\item{Intensity.idx}{Numeric vector indicating the column 
+index for the intensities}
 
 \item{Rt.05}{Retention time value to get a similarity of 0.5.}
 
-\item{Freq}{Minimum observed frequency to consider an adduct or a fragment to apply the cluster-based filter.}
+\item{Freq}{Minimum observed frequency to consider an 
+adduct or a fragment 
+to apply the cluster-based filter.}
 
-\item{Add.Id}{It indicates the adduct(s) or fragment(s) that are considered to apply the cluster-based filter.
-If NULL, those adducts with an observed frequency equal or higher than 0.10 will be used.}
+\item{Add.Id}{It indicates the adduct(s) or fragment(s) 
+that are considered to 
+apply the cluster-based filter.
+If NULL, those adducts with an observed 
+frequency equal or higher 
+than 0.10 will be used.}
 
-\item{background}{Vector containing a list of KEGG identifiers which will be set to 0 in the diffusion process. This will have an
-effect in the normalization process performed when using the z score.
-If NULL, the background will be set to all the compounds available in df.}
+\item{background}{Vector containing a list of KEGG identifiers 
+which will be 
+set to 0 in the diffusion process. 
+This will have an
+effect in the normalization process 
+performed when using the z score.
+If NULL, the background will be set to 
+all the compounds available in df.}
 
 \item{diffusion.input.type}{Diffusion input type per compound.
 "binary" 1 if the compound is proposed.
-"probability" computes the probability of existence of each compound.}
+"probability" computes the probability 
+of existence of each compound.}
 
-\item{Unique.Annotation}{Logical (only available when input type="binary"). If TRUE, the binary diffusion input is computed
-by only considering those peaks with a unique annotation (Def: FALSE).}
+\item{Unique.Annotation}{Logical (only available when input type="binary"). 
+If TRUE, the binary diffusion input is computed
+by only considering those peaks with a 
+unique annotation (Def: FALSE).}
 
-\item{graph}{Diffusion graph where nodes correspond to KEGG compounds.
-If NULL, the diffusion graph indicated in \code{graph.name} will be loaded.}
+\item{graph}{Diffusion graph where nodes correspond to 
+KEGG compounds.
+If NULL, the diffusion graph indicated in 
+\code{graph.name} will be loaded.}
 
-\item{K}{Regularised Laplacian kernel. If NULL, it will be computed using the \code{regularisedLaplacianKernel} function
+\item{K}{Regularised Laplacian kernel. If NULL, 
+it will be computed 
+using the \code{regularisedLaplacianKernel} 
+function
 from DiffuStats R package.}
 
 \item{score}{Method of diffusion. Def: c("raw", "ber_s", "z")}
 
-\item{graph.name}{Name of the diffusion graphs available in mWISE. The options are "fella", "RClass3levels" or "RClass2levels" (Def: "fella").}
+\item{graph.name}{Name of the diffusion graphs available in mWISE. 
+The options are "fella", "RClass3levels" or 
+"RClass2levels" (Def: "fella").}
 
-\item{nClust}{Number of clusters that may be used. Def: Number of clusters - 1.}
+\item{nClust}{Number of clusters that may be used (Def: 2)}
 
-\item{do.Par}{TRUE if parallel computing is required. Def: TRUE}
+\item{do.Par}{TRUE if parallel computing is required (Def: TRUE)}
 }
 \value{
-Function \code{matchingStage} returns a list containing the input peak list and the table of annotated peaks,
-containing all the potential KEGG candidates for each LC-MS feature.
+Function \code{matchingStage} returns a list containing 
+the input peak list and the table of annotated peaks,
+containing all the potential KEGG candidates for each 
+LC-MS feature.
 }
 \description{
-Wrapper function that performs the complete workflow of mWISE to annotate a peak-intensity matrix.
+Wrapper function that performs the complete workflow of mWISE to 
+annotate a peak-intensity matrix.
+}
+\examples{
+data("sample.keggDB")
+Cpd.Add <- CpdaddPreparation(KeggDB = sample.keggDB, 
+do.Par = FALSE)
+data(sample.dataset)
+Peak.List <- sample.dataset$Negative$Input
+Intensity.idx <- seq(27,38)
+data("sample.graph")
+g.metab <- igraph::as.undirected(sample.graph)
+Annotated.List <- mWISE.annotation(Peak.List = Peak.List,
+                                   polarity = "negative",
+                                   diffusion.input.type = "binary",
+                                   score = "raw",
+                                   Cpd.Add = Cpd.Add,
+                                   graph = g.metab,
+                                   Unique.Annotation = TRUE,
+                                   Intensity.idx = Intensity.idx,
+                                   do.Par = FALSE)
 }

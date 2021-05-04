@@ -1,28 +1,31 @@
 #' @name diffusion-funs
 #' @aliases finalResults
-#' @aliases modifiedTabs
 #' @title Functions to apply diffusion in graphs
 #' @description
-#' Function \code{finalResults} prepares the final table ranked by the diffusion scores computed.
-#' Function \code{modifiedTabs} prepares the tables that result from the matching stage and the
-#' filtering stage to evaluate their performance.
+#' Function \code{finalResults} prepares the final table ranked by 
+#' the diffusion scores computed.
 #' @param Diff.Tab
 #' Data frame that results from the diffusion step.
 #' @param score
 #' Method of diffusion. Possible values are: "raw", "ber_s" and "z"
 #' @param df
-#' Data frame containing the results from the matching or the filtering stage.
+#' Data frame containing the results from the matching or the 
+#' filtering stage.
 #' @param do.Par
 #' TRUE if parallel computing is required. Def: TRUE.
 #' @param nClust
 #' Number of clusters that may be used. Def: Number of clusters - 1.
 #' @return
-#' Function \code{finalResults} returns a table containing the final potential candidates ranked by diffusion score.
-#' Function \code{modifiedTabs} returns a table containing the potential candidates in a specific mWISE stage without repeated peaks.
+#' Function \code{finalResults} returns a table containing the final 
+#' potential candidates ranked by diffusion score.
 #' @export
+#' @importFrom doParallel registerDoParallel
+#' @importFrom plyr ldply
 
 finalResults <- function(Diff.Tab, score, do.Par = TRUE, nClust){
-  doParallel::registerDoParallel(nClust)
+  if (do.Par){
+    doParallel::registerDoParallel(nClust)
+  }
   cat("Preparing the diffusion-based ranked table...")
   Diff.Tab <- plyr::ldply(unique(Diff.Tab$Peak.Id), function(id){
     dx <- Diff.Tab[Diff.Tab$Peak.Id %in% id,]
@@ -63,7 +66,22 @@ finalResults <- function(Diff.Tab, score, do.Par = TRUE, nClust){
   return(Ranked.Tab)
 }
 
+#' @aliases modifiedTabs
+#' @description
+#' Function \code{modifiedTabs} prepares the tables that result from 
+#' the matching stage and the
+#' filtering stage to evaluate their performance.
+#' @return
+#' Function \code{modifiedTabs} returns a table containing the potential 
+#' candidates in a specific mWISE stage without repeated peaks.
+#' @export
+#' @importFrom doParallel registerDoParallel
+#' @importFrom plyr ldply
+
 modifiedTabs <- function(df, do.Par = TRUE, nClust){
+  if (do.Par){
+    doParallel::registerDoParallel(nClust)
+  }
   df <- plyr::ldply(unique(df$Peak.Id), function(id){
     dx <- df[df$Peak.Id %in% id,]
     if (sum(duplicated(dx$Compound))>0){
@@ -81,7 +99,7 @@ modifiedTabs <- function(df, do.Par = TRUE, nClust){
     } else {
       return(dx)
     }
-  },.parallel = TRUE)
+  },.parallel = do.Par)
 }
 
 

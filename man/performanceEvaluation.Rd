@@ -16,18 +16,43 @@ performanceEvaluation(
 \item{Annotated.dataset}{Object returned by \code{mWISE.annotation} function.}
 
 \item{df.Ref}{Reference data frame. It should contain a column named "Peak.Id"
-with a peak identifier that corresponds to the mWISE Peak identifier, and a column named "Kegg"
+with a peak identifier that corresponds to the mWISE Peak 
+identifier, and a column named "Kegg"
 with the reference KEGG identifiers.}
 
-\item{top.cmps}{Number of top compounds to be considered in performance evaluation.}
+\item{top.cmps}{Number of top compounds to be considered in performance 
+evaluation.}
 
 \item{do.Par}{TRUE if parallel computing is required. Def: TRUE.}
 
 \item{nClust}{Number of clusters that may be used. Def: Number of clusters - 1.}
 }
 \value{
-Function \code{performanceEvaluation} returns a data frame with the performance of each mWISE stage.
+Function \code{performanceEvaluation} returns a data frame 
+with the performance of each mWISE stage.
 }
 \description{
-Function \code{performanceEvaluation} computes performance metrics when a reference table is available.
+Function \code{performanceEvaluation} computes performance 
+metrics when a reference table is available.
+}
+\examples{
+data("sample.keggDB")
+Cpd.Add <- CpdaddPreparation(KeggDB = sample.keggDB, do.Par = FALSE)
+data(sample.dataset)
+Peak.List <- sample.dataset$Negative$Input
+Intensity.idx <- seq(27,38)
+data("sample.graph")
+gMetab <- igraph::as.undirected(sample.graph)
+Annotated.List <- mWISE.annotation(Peak.List = Peak.List,
+                                   polarity = "negative",
+                                   diffusion.input.type = "binary",
+                                   score = "raw",
+                                   Cpd.Add = Cpd.Add,
+                                   graph = gMetab,
+                                   Unique.Annotation = TRUE,
+                                   Intensity.idx = Intensity.idx,
+                                   do.Par = FALSE)
+ df.Ref <- sample.dataset$Negative$Output
+ performanceEvaluation(Annotated.dataset = Annotated.List, 
+                       df.Ref = df.Ref, top.cmps = 3)
 }

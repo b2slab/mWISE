@@ -7,7 +7,6 @@
 \alias{diffusion.input.Binary}
 \alias{diffusion.input.probability}
 \alias{finalResults}
-\alias{modifiedTabs}
 \alias{set.diffusion}
 \title{Functions to apply diffusion in graphs}
 \usage{
@@ -38,20 +37,27 @@ set.diffusion(
 }
 \arguments{
 \item{df}{Object returned by the \code{diffusion.input} function. It is a
-list containing the diffusion input matrix (data frame containing a column named "Compound"
-with the KEGG identifiers of the potential candidates and a column named "Diffusion.Input") and
+list containing the diffusion input matrix (data frame 
+containing a column named "Compound"
+with the KEGG identifiers of the potential candidates 
+and a column named "Diffusion.Input") and
 a character vector indicating the diffusion input type.}
 
 \item{input.type}{Diffusion input type per compound.
 "binary" 1 if the compound is proposed.
-"probability" computes the probability of existence of each compound.}
+"probability" computes the probability of existence of each 
+compound.}
 
-\item{background}{Vector containing a list of KEGG identifiers which will be set to 0 in the diffusion process. This will have an
-effect in the normalization process performed when using the z score.
-If NULL, the background will be set to all the compounds available in df.}
+\item{background}{Vector containing a list of KEGG identifiers which will be 
+set to 0 in the diffusion process. This will have an 
+effect in the normalization process performed when using 
+the z score. If NULL, the background will be set to all 
+the compounds available in df.}
 
-\item{Unique.Annotation}{Logical (only available when input type="binary"). If TRUE, the binary diffusion input is computed
-by only considering those peaks with a unique annotation (Def: FALSE).}
+\item{Unique.Annotation}{Logical (only available when input type="binary"). 
+If TRUE, the binary diffusion input is computed
+by only considering those peaks with a unique 
+annotation (Def: FALSE).}
 
 \item{do.Par}{TRUE if parallel computing is required. Def: TRUE}
 
@@ -62,42 +68,105 @@ by only considering those peaks with a unique annotation (Def: FALSE).}
 \item{score}{Method of diffusion. Possible values are: "raw", "ber_s" and "z"}
 
 \item{graph}{Diffusion graph where nodes correspond to KEGG compounds.
-If NULL, the diffusion graph indicated in \code{graph.name} will be loaded.}
+If NULL, the diffusion graph indicated in \code{graph.name} 
+will be loaded.}
 
-\item{graph.name}{Name of the diffusion graphs available in mWISE. The options are "fella", "RClass3levels" or "RClass2levels" (Def: "fella").}
+\item{graph.name}{Name of the diffusion graphs available in mWISE. 
+The options are "fella", "RClass3levels" or 
+"RClass2levels" (Def: "fella").}
 
-\item{K}{Regularised Laplacian kernel. If NULL, it will be computed using the \code{regularisedLaplacianKernel} function
+\item{K}{Regularised Laplacian kernel. If NULL, it will be computed 
+using the \code{regularisedLaplacianKernel} function
 from DiffuStats R package.}
 
 \item{scores}{Method of diffusion. Def: c("raw", "ber_s", "z")}
 }
 \value{
-Function \code{diffusion.input} returns a list containing the diffusion input data frame and a character
+Function \code{diffusion.input} returns a list containing the 
+diffusion input data frame and a character
 specifying the diffusion input type.
 
-Function \code{diffusion.input.Binary} returns a data frame containing the binary diffusion input.
+Function \code{diffusion.input.Binary} returns a data 
+frame containing the 
+binary diffusion input.
 
-Function \code{diffusion.input.probability} returns a data frame containing the probability diffusion input.
+Function \code{diffusion.input.probability} returns a data 
+frame containing the probability diffusion input.
 
-Function \code{finalResults} returns a table containing the final potential candidates ranked by diffusion score.
-Function \code{modifiedTabs} returns a table containing the potential candidates in a specific mWISE stage without repeated peaks.
+Function \code{finalResults} returns a table containing the final 
+potential candidates ranked by diffusion score.
 
-Function \code{set.diffusion} returns a list containing the diffusion results, the compounds discarded during
-the diffusion process, the compounds present in the network and the background used.
+Function \code{set.diffusion} returns a list containing 
+the diffusion results, the compounds discarded during
+the diffusion process, the compounds present in the network 
+and the background used.
 }
 \description{
-Function \code{diffusion.input} computes the diffusion input score to perform diffusion in graphs.
-It uses the functions \code{diffusion.input.Binary} and \code{diffusion.input.probability}
+Function \code{diffusion.input} computes the diffusion input 
+score to perform diffusion in graphs.
+It uses the functions \code{diffusion.input.Binary} and 
+\code{diffusion.input.probability}
 
-Function \code{diffusion.input.Binary} computes the binary diffusion input score.
+Function \code{diffusion.input.Binary} computes the binary 
+diffusion input score.
 
-Function \code{diffusion.input.probability} computes the probability diffusion input score.
+Function \code{diffusion.input.probability} computes the 
+probability diffusion input score.
 
-Function \code{finalResults} prepares the final table ranked by the diffusion scores computed.
-Function \code{modifiedTabs} prepares the tables that result from the matching stage and the
-filtering stage to evaluate their performance.
+Function \code{finalResults} prepares the final table ranked by 
+the diffusion scores computed.
 
 Function \code{set.diffusion} diffuses heat in a specific
 Kernel given a matrix of compounds and its
 diffusion input score.
+}
+\examples{
+data("sample.keggDB")
+Cpd.Add <- CpdaddPreparation(KeggDB = sample.keggDB, do.Par = FALSE)
+data(sample.dataset)
+Peak.List <- sample.dataset$Positive$Input
+Annotated.List <- matchingStage(Peak.List = Peak.List, Cpd.Add = Cpd.Add,
+                                polarity = "positive", do.Par = FALSE)
+Intensity.idx <- seq(27,38)
+clustered <- featuresClustering(Peak.List = Peak.List, 
+                                Intensity.idx = Intensity.idx, 
+                                do.Par = FALSE)
+Annotated.Tab <- Annotated.List$Peak.Cpd
+Annotated.Tab <- merge(Annotated.Tab,
+                       clustered$Peak.List[,c("Peak.Id", "pcgroup")],
+                       by = "Peak.Id")
+                       
+MH.Tab <- clusterBased.filter(df = Annotated.Tab, 
+                              polarity = "positive")
+Input.diffusion <- diffusion.input(df = MH.Tab,
+                                  input.type = "probability",
+                                  Unique.Annotation = FALSE,
+                                  do.Par = FALSE)
+data("sample.keggDB")
+Cpd.Add <- CpdaddPreparation(KeggDB = sample.keggDB, do.Par = FALSE)
+data(sample.dataset)
+Peak.List <- sample.dataset$Positive$Input
+Annotated.List <- matchingStage(Peak.List = Peak.List, Cpd.Add = Cpd.Add,
+                                polarity = "positive", do.Par = FALSE)
+Intensity.idx <- seq(27,38)
+clustered <- featuresClustering(Peak.List = Peak.List, 
+                                Intensity.idx = Intensity.idx, 
+                                do.Par = FALSE)
+Annotated.Tab <- Annotated.List$Peak.Cpd
+Annotated.Tab <- merge(Annotated.Tab,
+                       clustered$Peak.List[,c("Peak.Id", "pcgroup")],
+                       by = "Peak.Id")
+                       
+MH.Tab <- clusterBased.filter(df = Annotated.Tab, 
+                              polarity = "positive")
+Input.diffusion <- diffusion.input(df = MH.Tab,
+                                  input.type = "probability",
+                                  Unique.Annotation = FALSE,
+                                  do.Par = FALSE)
+data("sample.graph")
+gMetab <- igraph::as.undirected(sample.graph)
+diff.Cpd <- set.diffusion(df = Input.diffusion,
+                          scores = "z",
+                          graph = gMetab,
+                          do.Par = FALSE)
 }

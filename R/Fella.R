@@ -7,6 +7,7 @@
 #' @format An object of class igraph of length 10.
 #' @source Generated using FELLA R package.
 #' @references 
-#' Picart-Armada, S.; Fernandez-Albert, F.; Vinaixa, M.; Yanes, O.; Perera-Lluna, A. 
+#' Picart-Armada, S.; Fernandez-Albert, F.; Vinaixa, M.; Yanes, O.; 
+#' Perera-Lluna, A. 
 #' \emph{An R package to enrich metabolomics data: FELLA}, 2018
 "Fella"

@@ -14,7 +14,8 @@ Extracted from KEGG database.
 data(KeggDB)
 }
 \description{
-This data provides a data frame containing the KEGG identifiers
+This data provides a data frame containing the 
+KEGG identifiers
 and their exact masses.
 }
 \keyword{datasets}

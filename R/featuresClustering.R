@@ -2,8 +2,10 @@
 #' @aliases featuresClustering
 #' @title Functions to apply cluster-based filtering
 #' @description
-#' Function \code{featuresClustering} performs spectral clustering to group those features
-#' that come from the same metabolite. It uses \code{dataPrep}, \code{.LaplacianNg}, \code{k.optimization}
+#' Function \code{featuresClustering} performs spectral clustering 
+#' to group those features
+#' that come from the same metabolite. It uses \code{dataPrep}, 
+#' \code{.LaplacianNg}, \code{k.optimization}
 #' and \code{eps.optimization} functions.
 #' @param Peak.List
 #' Data frame containing the LC-MS features.
@@ -15,7 +17,8 @@
 #' \item{Intensities for each sample}
 #' }
 #' @param Intensity.idx
-#' Numeric vector indicating the column index for the intensities
+#' Numeric vector indicating the column index 
+#' for the intensities
 #' @param Rt.05
 #' Retention time value to get a similarity of 0.5.
 #' @param do.Par
@@ -23,10 +26,19 @@
 #' @param nClust
 #' Number of cores that may be used if do.Par = TRUE.
 #' @return
-#' Function \code{featuresClustering} returns the input peak list with an additional column named pcgroup
+#' Function \code{featuresClustering} returns the input peak list 
+#' with an additional column named pcgroup
 #' that indicates the clustering.
+#' @examples 
+#' data(sample.dataset)
+#' Peak.List <- sample.dataset$Positive$Input
+#' Intensity.idx <- seq(27,38)
+#' clustered <- featuresClustering(Peak.List = Peak.List, 
+#'                                 Intensity.idx = Intensity.idx, 
+#'                                 do.Par = FALSE)
 #' @export
-
+#' @importFrom dbscan dbscan
+#' @importFrom stats prcomp
 
 featuresClustering <- function(Peak.List, Intensity.idx,
                                Rt.05 = 5, do.Par = TRUE, nClust) {
@@ -34,11 +46,12 @@ featuresClustering <- function(Peak.List, Intensity.idx,
   cat("Preparing the data for clustering...")
   IData <- Peak.List[,Intensity.idx]
   Rt <- Peak.List$rt
-  # Preparation of the pca to optimize the parameters (similarity matrices have 0s in the diagonal)
   data.prep <- dataPrep(IData = IData, Rt = Rt, Rt.05 = Rt.05)
   comb.mat.clustering <- sqrt(data.prep$Rt.sim*data.prep$I.sim)
-  data.prep$Rt.sim <- data.prep$Rt.sim-diag(1,dim(data.prep$Rt.sim)[1],dim(data.prep$Rt.sim)[2])
-  data.prep$I.sim <- data.prep$I.sim-diag(1,dim(data.prep$I.sim)[1],dim(data.prep$I.sim)[2])
+  data.prep$Rt.sim <- data.prep$Rt.sim-diag(1,dim(data.prep$Rt.sim)[1],
+                                            dim(data.prep$Rt.sim)[2])
+  data.prep$I.sim <- data.prep$I.sim-diag(1,dim(data.prep$I.sim)[1],
+                                          dim(data.prep$I.sim)[2])
   data.prep$Rt.sim[data.prep$Rt.sim == 0] <- 1e-16
   data.prep$I.sim[data.prep$I.sim == 0] <- 1e-16
   comb.mat <- sqrt(data.prep$Rt.sim*data.prep$I.sim)
@@ -48,23 +61,24 @@ featuresClustering <- function(Peak.List, Intensity.idx,
   cat("DONE!","\n")
   # Parameters optimization
   cat("Computing optimized parameters for spectral clustering...")
-  k.tuned <- k.optimization(pca.to.tune = pca.tune, data.prep = data.prep, IData = IData,
-                            nrow.List = nrow(Peak.List), do.Par = do.Par, nClust = nClust)
-  eps.tuned <- eps.optimization(pca.to.tune = pca.tune, data.prep = data.prep, IData = IData,
-                                k.tuned = k.tuned, do.Par = do.Par, nClust = nClust)
+  k.tuned <- k.optimization(pca.to.tune = pca.tune, data.prep = data.prep, 
+                            IData = IData, nrow.List = nrow(Peak.List), 
+                            do.Par = do.Par, nClust = nClust)
+  eps.tuned <- eps.optimization(pca.to.tune = pca.tune, 
+                                data.prep = data.prep, 
+                                IData = IData, k.tuned = k.tuned, 
+                                do.Par = do.Par, nClust = nClust)
   cat("DONE!","\n")
-  # Pca to cluster features
-  # data.prep <- dataPrep(IData = IData, Rt = Rt, I.05 = I.05, Rt.05 = Rt.05)
-  # data.prep$Rt.sim[data.prep$Rt.sim == 0] <- 1e-16
-  # data.prep$I.sim[data.prep$I.sim == 0] <- 1e-16
-  #comb.mat <- sqrt(data.prep$Rt.sim*data.prep$I.sim)
   cat("Clustering peaks...")
   Lapl.mat <- .LaplacianNg(mat = comb.mat.clustering)
   pca.obj <- prcomp(Lapl.mat, center = TRUE, scale. = TRUE)
   rownames(pca.obj$x) <- rownames(comb.mat.clustering)
   # Clustering with tuned parameters
-  dbscan.clustering <- dbscan::dbscan(x = pca.obj$x[,1:k.tuned], eps = eps.tuned, minPts = 1)
+  dbscan.clustering <- dbscan::dbscan(x = pca.obj$x[,seq_len(k.tuned)], 
+                                      eps = eps.tuned, minPts = 1)
   Peak.List$pcgroup <- dbscan.clustering$cluster
   cat("DONE!","\n")
-  return(list(Peak.List = Peak.List, k.tuned = k.tuned, eps.tuned = eps.tuned))
+  return(list(Peak.List = Peak.List, 
+              k.tuned = k.tuned, 
+              eps.tuned = eps.tuned))
 }

@@ -3,18 +3,22 @@
 #' @aliases .LaplacianNg
 #' @title Functions to apply cluster-based filtering
 #' @description
-#' Function \code{dataPrep} prepares the intensity and retention time data for spectral clustering.
+#' Function \code{dataPrep} prepares the intensity and retention 
+#' time data for 
+#' spectral clustering.
 #' Function \code{.LaplacianNg} computes a normalized Laplacian matrix.
 #' @param IData
-#' Data frame containing the intensity for each sample in its columns.
+#' Data frame containing the intensity for each 
+#' sample in its columns.
 #' @param Rt
 #' Vector containing the retention times.
 #' @param Rt.05
 #' Retention time value to get a similarity of 0.5.
 #' @return
-#' Function \code{dataPrep} returns a list containing the Gaussian similarity matrices for the retention time differences
+#' Function \code{dataPrep} returns a list containing the 
+#' Gaussian similarity 
+#' matrices for the retention time differences
 #' and the intensities correlation.
-#' @export
 
 # data preparation
 dataPrep <- function(IData, Rt, Rt.05 = 5) {

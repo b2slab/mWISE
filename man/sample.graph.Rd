@@ -14,11 +14,13 @@ Extracted from FELLA R package.
 data(sample.graph)
 }
 \description{
-This data provides a sample KEGG knowledge graph with compounds, 
+This data provides a sample KEGG knowledge 
+graph with compounds, 
 reactions, enzymes, modules and pathways knowledge.
 }
 \references{
-Picart-Armada, S.; Fernandez-Albert, F.; Vinaixa, M.; Yanes, O.; Perera-Lluna, A. 
+Picart-Armada, S.; Fernandez-Albert, F.; Vinaixa, M.; Yanes, 
+O.; Perera-Lluna, A. 
 \emph{An R package to enrich metabolomics data: FELLA}, 2018
 }
 \keyword{datasets}

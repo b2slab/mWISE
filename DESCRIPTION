@@ -1,17 +1,27 @@
 Package: mWISE
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Untargeted LC-MS data annotation
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Authors@R: c(
+  person(
+    "Maria", "Barranco-Altirriba", email = "maria.barranco@upc.edu",
+    role = c("aut", "cre")))
+Description: mWISE provides a set of strategies to annotate untargeted LC-MS 
+    data.
+    Given a peak-intensity table as input, mWISE applies three main steps 
+    aimed at i) matching  mass-to-charge ratio values to KEGG database, ii) clustering 
+    and filtering the potential KEGG candidates and iii) building a final prioritized 
+    list using diffusion in networks. 
+    mWISE takes advantage of biological pathways knowledge to improve the
+    annotation confidence level.
 License: GPL-3
 Encoding: UTF-8
-LazyData: false
+biocViews: Software, Metabolomics, Annotation, MassSpectrometry, Network, Pathways,
+    KEGG
 RoxygenNote: 7.1.1
 Depends: 
-    R (>= 2.10)
-VignetteBuilder: knitr
+    R (>= 4.1)
+VignetteBuilder: rmarkdown
 Suggests: BiocStyle, knitr, rmarkdown
-Imports: doParallel, GenomicRanges, dbscan, diffuStats, plyr, igraph, IRanges, stats
+Imports: doParallel, GenomicRanges, dbscan, diffuStats, plyr, igraph, IRanges, 
+    stats, utils

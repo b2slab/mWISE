@@ -7,16 +7,29 @@
 \title{Functions to assist adducts and fragments selection}
 \usage{
 printAdducts(pol = c("positive", "negative"))
+
+printQM_Adducts(pol = c("positive", "negative"))
 }
 \arguments{
-\item{pol}{Acquisition mode. It can be "positive", "negative" or both.}
+\item{pol}{Acquisition mode. It can be positive, negative or both.}
+}
+\value{
+Function \code{printAdducts} returns the complete list of adducts 
+available in mWISE for a given polarity.
+
+Function \code{printQM_Adducts} returns the complete list of 
+quasi-molecular adducts available in mWISE for a given polarity.
 }
 \description{
-Function \code{printAdducts} returns a list of all the available adducts and fragments in mWISE for a given polarity.
-Function \code{printQM_Adducts} returns a list of the default quasi-molecular adducts or fragments of mWISE for a given polarity.
-These functions can be used to ease the selection of adducts or fragments to be considered during the matching stage.
+Function \code{printAdducts} returns a list of all the available adducts 
+and fragments in mWISE for a given polarity.
+
+Function \code{printQM_Adducts} returns a list of the default 
+quasi-molecular adducts or fragments of mWISE for a given polarity.
+These functions can be used to ease the selection of adducts 
+or fragments to be considered during the matching stage.
 }
 \examples{
-Default.adducts <- printAdducts(pol = "negative")
-Default.QMadducts <- printQM_Adducts(pol = "positive")
+Adducts.List <- printAdducts(pol="negative")
+Adducts.List <- printQM_Adducts(pol="negative")
 }

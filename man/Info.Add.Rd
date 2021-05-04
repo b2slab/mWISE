@@ -8,7 +8,8 @@
 An object of class data frame with 269 rows and 8 columns.
 }
 \source{
-Generated using information from CAMERA, cliqueMS and Tong et al.
+Generated using information from CAMERA, cliqueMS 
+and Tong et al.
 }
 \usage{
 data(Info.Add)
@@ -18,16 +19,19 @@ This data provides a data frame containing information about
 adducts and fragments to build a \code{Cpd.Add} table.
 }
 \references{
-Tong, H. et al. \emph{Automated Data Massaging, Interpreta-tion,  and E-Mailing 
-Modules for High Throughput Open Access Mass Spectrometry} 
+Tong, H. et al. \emph{Automated Data Massaging, Interpreta-tion,  
+and E-Mailing 
+Modules for High Throughput Open Access Mass Spectrometry}
 American Society for Mass Spectrometry, 1999
-
-Senan, O. et al. \emph{CliqueMS:  A  computational  tool  for  annotating 
-in-source metabolite ions from LC-MS untargeted metabolomics data based on a 
+Senan, O. et al. \emph{CliqueMS:  A  computational  tool  for  
+annotating 
+in-source metabolite ions from LC-MS untargeted metabolomics 
+data based on a 
 coelution similarity network} Bioinformatics, 2019
-
-Kuhl, C. et al. \emph{ CAMERA: Anintegrated  strategy  for  compound  spectra  
-extraction  and  annotation  of  liquid  chro-matography/mass spectrometry data sets}
+Kuhl, C. et al. \emph{ CAMERA: Anintegrated  strategy  for  
+compound  spectra  
+extraction  and  annotation  of  liquid  chro-matography/mass 
+spectrometry data sets}
 Analytical chemistry, 2012
 }
 \keyword{datasets}

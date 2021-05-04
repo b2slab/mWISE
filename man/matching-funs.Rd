@@ -6,7 +6,8 @@
 \alias{mass.range.format}
 \alias{matchingStage}
 \alias{mz.ppm.converter}
-\title{Functions to match a peak-intensity table to KEGG database}
+\title{Functions to match a peak-intensity table to 
+KEGG database}
 \usage{
 mass.range.format(
   Peak.List,
@@ -26,7 +27,7 @@ matchingStage(
   Add.List = NULL,
   Cpd.Add,
   do.Par = TRUE,
-  nClust
+  nClust = 2
 )
 
 mz.ppm.converter(
@@ -46,25 +47,37 @@ Columns should contain:
 \item{Intensities for each sample}
 }}
 
-\item{force.mass.range}{Logical. If TRUE, the m/z range is computed using the user-defined ppm tolerance or mz.range (Def: TRUE).}
+\item{force.mass.range}{Logical. If TRUE, the m/z range is computed 
+using the user-defined 
+ppm tolerance or mz.range (Def: TRUE).}
 
-\item{mass.range.type}{A character indicating if the m/z range computation is performed using tolerance in ppm ("ppm.mode").
+\item{mass.range.type}{A character indicating if the m/z range 
+computation is performed 
+using tolerance in ppm ("ppm.mode").
 or m/z uncertainty ("mz.range") (Def: "ppm.mode").}
 
-\item{mz.range}{If mass.range.type = "mz.range", it indicates the m/z range uncertainty (i.e. mz.range = 0.001).}
+\item{mz.range}{If mass.range.type = "mz.range", it 
+indicates the m/z range 
+uncertainty (i.e. mz.range = 0.001).}
 
-\item{ppm}{If mass.range.type = "ppm.mode", it indicates the tolerance in ppm (i.e. ppm = 10).}
+\item{ppm}{If mass.range.type = "ppm.mode", it 
+indicates the tolerance in 
+ppm (i.e. ppm = 10).}
 
-\item{polarity}{Acquisition mode of the study. It can be "positive" or "negative".}
+\item{polarity}{Acquisition mode of the study. 
+It can be "positive" or "negative".}
 
 \item{Add.List}{List of adducts or fragments to consider.}
 
-\item{Cpd.Add}{Compound to adduct matrix. It can be built using \code{CpdaddPreparation} function.
+\item{Cpd.Add}{Compound to adduct matrix. It can be built 
+using \code{CpdaddPreparation} 
+function.
 If NULL, the default information will be used.}
 
-\item{do.Par}{Logical. If parallel computing is required (Def: TRUE).}
+\item{do.Par}{Logical. If parallel computing is required 
+(Def: TRUE).}
 
-\item{nClust}{Number of clusters that may be used. Def: Number of clusters - 1.}
+\item{nClust}{Number of clusters that may be used (Def: 2)}
 
 \item{tol}{Tolerance in ppm. Def: 10}
 
@@ -72,26 +85,45 @@ If NULL, the default information will be used.}
 
 \item{mz}{mass-to-charge ratio for which the conversion is performed.}
 
-\item{conversion}{Direction of the conversion. Character vector containing some of: "ppm.to.mz", "mz.to.ppm"}
+\item{conversion}{Direction of the conversion. Character vector containing 
+some of: "ppm.to.mz", "mz.to.ppm"}
 }
 \value{
-Function \code{mass.range.format} returns the input peak list with two additional columns containing the mzmin and mzmax values.
+Function \code{mass.range.format} returns 
+the input peak list 
+with two additional columns containing the 
+mzmin and mzmax values.
 
-Function \code{matchingStage} returns a list containing the input peak list and the table of annotated peaks,
-containing all the potential KEGG candidates for each LC-MS feature.
+Function \code{matchingStage} returns a list 
+containing the input peak 
+list and the table of annotated peaks,
+containing all the potential KEGG candidates 
+for each LC-MS feature.
 
-Function \code{mz.ppm.converter} returns a vector of values containing uncertainty (if conversion="ppm.to.mz")
+Function \code{mz.ppm.converter} returns a vector of values 
+containing uncertainty (if conversion="ppm.to.mz")
 or tolerance in ppm (if conversion="mz.to.ppm")
 }
 \description{
-Function \code{mass.range.format} builds mz ranges for a peak-intensity table using \code{mz.ppm.converter} if required.
+Function \code{mass.range.format} builds mz ranges 
+for a peak-intensity table using \code{mz.ppm.converter} 
+if required.
 
-Function \code{matchingStage} performs a fast matching of the peak-intensity table to KEGG database
+Function \code{matchingStage} performs a fast matching of the 
+peak-intensity table to KEGG database
 using adducts and fragments knowledge.
 
-Function \code{mz.ppm.converter} transforms the user-defined tolerance from ppm to mz uncertainty or viceversa.
+Function \code{mz.ppm.converter} transforms the user-defined 
+tolerance from ppm to mz uncertainty or viceversa.
 }
 \examples{
-matchingStage <- function(Peak.List, polarity = "positive", 
-do.Par = TRUE, nClust = 2)
+data("sample.keggDB")
+Cpd.Add <- CpdaddPreparation(KeggDB = sample.keggDB, 
+do.Par = FALSE)
+data(sample.dataset)
+Peak.List <- sample.dataset$Positive$Input
+Annotated.List <- matchingStage(Peak.List = Peak.List, 
+                                Cpd.Add = Cpd.Add,
+                                polarity = "positive", 
+                                do.Par = FALSE)
 }
