@@ -7,6 +7,7 @@
 \alias{diffusion.input.Binary}
 \alias{diffusion.input.probability}
 \alias{finalResults}
+\alias{modifiedTabs}
 \alias{set.diffusion}
 \title{Functions to apply diffusion in graphs}
 \usage{
@@ -24,6 +25,8 @@ diffusion.input.Binary(df, do.Par = TRUE, nClust = 2)
 diffusion.input.probability(df, do.Par = TRUE, nClust = 2)
 
 finalResults(Diff.Tab, score, do.Par = TRUE, nClust)
+
+modifiedTabs(df, do.Par = TRUE, nClust)
 
 set.diffusion(
   df,
@@ -96,6 +99,9 @@ frame containing the probability diffusion input.
 Function \code{finalResults} returns a table containing the final 
 potential candidates ranked by diffusion score.
 
+Function \code{modifiedTabs} returns a table containing the potential 
+candidates in a specific mWISE stage without repeated peaks.
+
 Function \code{set.diffusion} returns a list containing 
 the diffusion results, the compounds discarded during
 the diffusion process, the compounds present in the network 
@@ -115,6 +121,10 @@ probability diffusion input score.
 
 Function \code{finalResults} prepares the final table ranked by 
 the diffusion scores computed.
+
+Function \code{modifiedTabs} prepares the tables that result from 
+the matching stage and the
+filtering stage to evaluate their performance.
 
 Function \code{set.diffusion} diffuses heat in a specific
 Kernel given a matrix of compounds and its

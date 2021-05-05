@@ -66,6 +66,7 @@ finalResults <- function(Diff.Tab, score, do.Par = TRUE, nClust){
   return(Ranked.Tab)
 }
 
+#' @name diffusion-funs
 #' @aliases modifiedTabs
 #' @description
 #' Function \code{modifiedTabs} prepares the tables that result from 
