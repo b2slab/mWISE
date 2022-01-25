@@ -34,10 +34,10 @@ fitness <- function(k, pca.to.tune, data.prep, IData){
   
   # Number of putative compound units correlated
   n.Corr <- plyr::ldply(unique(kmeans.clustering$cluster), function(c){
-    colMeans(IData[which(kmeans.clustering$cluster %in% c),])
+    colMeans(IData[which(kmeans.clustering$cluster %in% c),], na.rm = TRUE)
   })
   #cor.mat <- n.Corr %>% t() %>% cor()
-  cor.mat <- cor(t(n.Corr))
+  cor.mat <- cor(t(n.Corr), use = "pairwise.complete.obs")
   cor.mat[upper.tri(x = cor.mat, diag = TRUE)] <- 0
   n <- sum(cor.mat>0.6)
   return(c(Mean.I, Mean.RT, n))

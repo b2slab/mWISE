@@ -6,7 +6,8 @@
 #' to group those features
 #' that come from the same metabolite. It uses \code{dataPrep}, 
 #' \code{.LaplacianNg}, \code{k.optimization}
-#' and \code{eps.optimization} functions.
+#' and \code{eps.optimization} functions. The correlation is computed using the
+#' function \code{cor(use = "pairwise.complete.obs")}.
 #' @param Peak.List
 #' Data frame containing the LC-MS features.
 #' Columns should contain:

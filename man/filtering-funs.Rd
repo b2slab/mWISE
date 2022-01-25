@@ -143,7 +143,8 @@ Function \code{featuresClustering} performs spectral clustering
 to group those features
 that come from the same metabolite. It uses \code{dataPrep}, 
 \code{.LaplacianNg}, \code{k.optimization}
-and \code{eps.optimization} functions.
+and \code{eps.optimization} functions. The correlation is computed using the
+function \code{cor(use = "pairwise.complete.obs")}.
 
 Function \code{k.optimization} optimizes the number of clusters. 
 This value will be used to define the number

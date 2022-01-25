@@ -22,7 +22,7 @@
 
 # data preparation
 dataPrep <- function(IData, Rt, Rt.05 = 5) {
-  I.sim <- cor(t(IData))
+  I.sim <- cor(t(IData), use = "pairwise.complete.obs")
   I.dist <- (1-I.sim)/2
   I.05 <- 0.4
   I.05.dist <- (1-I.05)/2

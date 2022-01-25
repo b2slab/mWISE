@@ -120,10 +120,11 @@ The options are "fella", "RClass3levels" or
 \item{do.Par}{TRUE if parallel computing is required (Def: TRUE)}
 }
 \value{
-Function \code{matchingStage} returns a list containing 
-the input peak list and the table of annotated peaks,
-containing all the potential KEGG candidates for each 
-LC-MS feature.
+Function \code{mWISE.annotation} returns a list containing 
+a table with all the annotations (Annotated.Tab), a
+table containing the features clustering (Clustered.Tab),
+a filtered table (MH.Tab), a table containing the diffusion 
+scores (Diff.Tab) and the final ranked table (Ranked.Tab).
 }
 \description{
 Wrapper function that performs the complete workflow of mWISE to 

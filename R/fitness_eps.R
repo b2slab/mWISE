@@ -37,10 +37,10 @@ fitness.eps <- function(eps, pca.to.tune, k.tuned, data.prep, IData){
   
   n.Corr <- plyr::ldply(unique(dbscan.clustering$cluster), function(c){
     IData[which.max(
-      rowMeans(IData[which(dbscan.clustering$cluster %in% c),])),]
+      rowMeans(IData[which(dbscan.clustering$cluster %in% c),], na.rm = TRUE)),]
   })
   #cor.mat <- n.Corr %>% t() %>% cor()
-  cor.mat <- cor(t(n.Corr))
+  cor.mat <- cor(t(n.Corr), use = "pairwise.complete.obs")
   cor.mat[upper.tri(x = cor.mat, diag = TRUE)] <- 0
   n <- sum(cor.mat>0.6)
   

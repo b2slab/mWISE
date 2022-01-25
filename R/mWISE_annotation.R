@@ -94,10 +94,11 @@
 #' @param nClust
 #' Number of clusters that may be used (Def: 2)
 #' @return
-#' Function \code{matchingStage} returns a list containing 
-#' the input peak list and the table of annotated peaks,
-#' containing all the potential KEGG candidates for each 
-#' LC-MS feature.
+#' Function \code{mWISE.annotation} returns a list containing 
+#' a table with all the annotations (Annotated.Tab), a
+#' table containing the features clustering (Clustered.Tab),
+#' a filtered table (MH.Tab), a table containing the diffusion 
+#' scores (Diff.Tab) and the final ranked table (Ranked.Tab).
 #' @examples 
 #' data("sample.keggDB")
 #' Cpd.Add <- CpdaddPreparation(KeggDB = sample.keggDB, 
