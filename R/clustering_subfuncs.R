@@ -18,6 +18,9 @@
 #' An optional character string giving a method for computing correlations 
 #' in the presence of missing values. Default is "everything", but when
 #' missing values are present, "pairwise.complete.obs" is required. 
+#' @param method
+#' A character string indicating which correlation coefficient
+#' is to be computed. One of "pearson" (default), "kendall", or "spearman".
 #' @return
 #' Function \code{dataPrep} returns a list containing the 
 #' Gaussian similarity 
@@ -25,8 +28,8 @@
 #' and the intensities correlation.
 
 # data preparation
-dataPrep <- function(IData, Rt, Rt.05 = 5, use = "everything") {
-  I.sim <- cor(t(IData), use = use)
+dataPrep <- function(IData, Rt, Rt.05 = 5, use = "everything", method = "pearson") {
+  I.sim <- cor(t(IData), use = use, method = method)
   I.dist <- (1-I.sim)/2
   I.05 <- 0.4
   I.05.dist <- (1-I.05)/2

@@ -19,7 +19,8 @@
 #' @importFrom stats kmeans cor
 #' @importFrom plyr ldply llply
 
-fitness <- function(k, pca.to.tune, data.prep, IData, use = "everything"){
+fitness <- function(k, pca.to.tune, data.prep, IData, use = "everything",
+                    method = "pearson"){
   kmeans.clustering <- kmeans(x = pca.to.tune$x[,seq_len(k)], centers = k)
   
   # calculate the I similarity mean of each cluster
@@ -41,7 +42,7 @@ fitness <- function(k, pca.to.tune, data.prep, IData, use = "everything"){
     colMeans(IData[which(kmeans.clustering$cluster %in% c),], na.rm = TRUE)
   })
   #cor.mat <- n.Corr %>% t() %>% cor()
-  cor.mat <- cor(t(n.Corr), use = use)
+  cor.mat <- cor(t(n.Corr), use = use, method = method)
   cor.mat[upper.tri(x = cor.mat, diag = TRUE)] <- 0
   n <- sum(cor.mat>0.6)
   return(c(Mean.I, Mean.RT, n))

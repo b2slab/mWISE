@@ -26,6 +26,9 @@
 #' An optional character string giving a method for computing correlations 
 #' in the presence of missing values. Default is "everything", but when
 #' missing values are present, "pairwise.complete.obs" is required. 
+#' @param method
+#' A character string indicating which correlation coefficient
+#' is to be computed. One of "pearson" (default), "kendall", or "spearman".
 #' @param do.Par
 #' TRUE if parallel computing is required. Def: TRUE
 #' @param nClust
@@ -46,12 +49,14 @@
 #' @importFrom stats prcomp
 
 featuresClustering <- function(Peak.List, Intensity.idx, use = "everything",
-                               Rt.05 = 5, do.Par = TRUE, nClust) {
+                               method = "pearson", Rt.05 = 5, 
+                               do.Par = TRUE, nClust) {
 
   cat("Preparing the data for clustering...")
   IData <- Peak.List[,Intensity.idx]
   Rt <- Peak.List$rt
-  data.prep <- dataPrep(IData = IData, Rt = Rt, Rt.05 = Rt.05, use = use)
+  data.prep <- dataPrep(IData = IData, Rt = Rt, Rt.05 = Rt.05, 
+                        use = use, method = method)
   comb.mat.clustering <- sqrt(data.prep$Rt.sim*data.prep$I.sim)
   data.prep$Rt.sim <- data.prep$Rt.sim-diag(1,dim(data.prep$Rt.sim)[1],
                                             dim(data.prep$Rt.sim)[2])
@@ -68,11 +73,13 @@ featuresClustering <- function(Peak.List, Intensity.idx, use = "everything",
   cat("Computing optimized parameters for spectral clustering...")
   k.tuned <- k.optimization(pca.to.tune = pca.tune, data.prep = data.prep, 
                             IData = IData, nrow.List = nrow(Peak.List), 
-                            use = use, do.Par = do.Par, nClust = nClust)
+                            use = use, method = method,
+                            do.Par = do.Par, nClust = nClust)
   eps.tuned <- eps.optimization(pca.to.tune = pca.tune, 
                                 data.prep = data.prep, 
                                 IData = IData, k.tuned = k.tuned, 
-                                use = use, do.Par = do.Par, nClust = nClust)
+                                use = use, method = method,
+                                do.Par = do.Par, nClust = nClust)
   cat("DONE!","\n")
   cat("Clustering peaks...")
   Lapl.mat <- .LaplacianNg(mat = comb.mat.clustering)

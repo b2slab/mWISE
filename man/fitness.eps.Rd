@@ -4,7 +4,15 @@
 \alias{fitness.eps}
 \title{optimization function}
 \usage{
-fitness.eps(eps, pca.to.tune, k.tuned, data.prep, IData)
+fitness.eps(
+  eps,
+  pca.to.tune,
+  k.tuned,
+  data.prep,
+  IData,
+  use = "everything",
+  method = "pearson"
+)
 }
 \arguments{
 \item{eps}{Epsilon parameter test}
@@ -16,6 +24,10 @@ fitness.eps(eps, pca.to.tune, k.tuned, data.prep, IData)
 \item{data.prep}{object returned by dataPrep function}
 
 \item{IData}{Intensity correlation data}
+
+\item{use}{An optional character string giving a method for computing correlations 
+in the presence of missing values. Default is "everything", but when
+missing values are present, "pairwise.complete.obs" is required.}
 }
 \value{
 results for epsilon optimization

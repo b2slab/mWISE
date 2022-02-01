@@ -21,7 +21,8 @@
 #' @importFrom dbscan dbscan
 #' @importFrom plyr ldply llply
 #' @importFrom stats cor
-fitness.eps <- function(eps, pca.to.tune, k.tuned, data.prep, IData, use = "everything"){
+fitness.eps <- function(eps, pca.to.tune, k.tuned, data.prep, IData, 
+                        use = "everything", method = "pearson"){
   dbscan.clustering <- dbscan::dbscan(x = pca.to.tune$x[,seq_len(k.tuned)], 
                                       eps = eps)
   
@@ -44,7 +45,7 @@ fitness.eps <- function(eps, pca.to.tune, k.tuned, data.prep, IData, use = "ever
       rowMeans(IData[which(dbscan.clustering$cluster %in% c),], na.rm = TRUE)),]
   })
   #cor.mat <- n.Corr %>% t() %>% cor()
-  cor.mat <- cor(t(n.Corr), use = use)
+  cor.mat <- cor(t(n.Corr), use = use, method = method)
   cor.mat[upper.tri(x = cor.mat, diag = TRUE)] <- 0
   n <- sum(cor.mat>0.6)
   

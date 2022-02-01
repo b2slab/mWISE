@@ -16,6 +16,13 @@
 #' \code{k.optimization} function.
 #' @param nrow.List
 #' Numeric vector indicating the number of peaks.
+#' @param use
+#' An optional character string giving a method for computing correlations 
+#' in the presence of missing values. Default is "everything", but when
+#' missing values are present, "pairwise.complete.obs" is required. 
+#' @param method
+#' A character string indicating which correlation coefficient
+#' is to be computed. One of "pearson" (default), "kendall", or "spearman".
 #' @param do.Par
 #' TRUE if parallel computing is required. Def: TRUE
 #' @param nClust
@@ -28,7 +35,8 @@
 #' @importFrom stats dist
 #' 
 eps.optimization <- function(pca.to.tune, data.prep, IData, 
-                             use = "everything", k.tuned, do.Par, nClust) {
+                             use = "everything", k.tuned, 
+                             method = "pearson", do.Par, nClust) {
   if (do.Par){
     doParallel::registerDoParallel(nClust)
   }
@@ -45,7 +53,8 @@ eps.optimization <- function(pca.to.tune, data.prep, IData,
   res.opt <- plyr::ldply(eps.opt, function(e){
     res.opt <- fitness.eps(eps = e, pca.to.tune = pca.to.tune, 
                            k.tuned = k.tuned, IData = IData, 
-                           data.prep = data.prep, use = use)
+                           data.prep = data.prep, use = use,
+                           method = method)
     return(data.frame(k = e, t(res.opt)))
   },.parallel = do.Par)
 

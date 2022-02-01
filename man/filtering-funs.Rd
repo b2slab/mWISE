@@ -23,13 +23,39 @@ clusterBased.filter(
   nClust = 2
 )
 
-dataPrep(IData, Rt, Rt.05 = 5)
+dataPrep(IData, Rt, Rt.05 = 5, use = "everything", method = "pearson")
 
-eps.optimization(pca.to.tune, data.prep, IData, k.tuned, do.Par, nClust)
+eps.optimization(
+  pca.to.tune,
+  data.prep,
+  IData,
+  use = "everything",
+  k.tuned,
+  method = "pearson",
+  do.Par,
+  nClust
+)
 
-featuresClustering(Peak.List, Intensity.idx, Rt.05 = 5, do.Par = TRUE, nClust)
+featuresClustering(
+  Peak.List,
+  Intensity.idx,
+  use = "everything",
+  method = "pearson",
+  Rt.05 = 5,
+  do.Par = TRUE,
+  nClust
+)
 
-k.optimization(pca.to.tune, data.prep, IData, nrow.List, do.Par = TRUE, nClust)
+k.optimization(
+  pca.to.tune,
+  data.prep,
+  IData,
+  nrow.List,
+  use = "everything",
+  method = "pearson",
+  do.Par = TRUE,
+  nClust
+)
 
 recoveringPeaks(Annotated.Tab, MH.Tab)
 }
@@ -76,6 +102,13 @@ each sample in its columns.}
 \item{Rt}{Vector containing the retention times.}
 
 \item{Rt.05}{Retention time value to get a similarity of 0.5.}
+
+\item{use}{An optional character string giving a method for computing correlations 
+in the presence of missing values. Default is "everything", but when
+missing values are present, "pairwise.complete.obs" is required.}
+
+\item{method}{A character string indicating which correlation coefficient
+is to be computed. One of "pearson" (default), "kendall", or "spearman".}
 
 \item{pca.to.tune}{PCA to perform the spectral clustering.}
 

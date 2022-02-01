@@ -42,6 +42,9 @@
 #' index for the intensities
 #' @param Rt.05
 #' Retention time value to get a similarity of 0.5.
+#' @param method
+#' A character string indicating which correlation coefficient
+#' is to be computed. One of "pearson" (default), "kendall", or "spearman".
 #' @param Freq
 #' Minimum observed frequency to consider an 
 #' adduct or a fragment 
@@ -123,8 +126,9 @@
 mWISE.annotation <- function(Peak.List, force.mass.range = TRUE, 
                              mass.range.type = "ppm.mode",mz.range = NULL, 
                              ppm = 10, polarity = "positive", Add.List = NULL, 
-                             Cpd.Add, Intensity.idx, Rt.05 = 5, Freq = 0.50, 
-                             Add.Id = NULL, background = NULL,  
+                             Cpd.Add, Intensity.idx, Rt.05 = 5, 
+                             use = "everything", method = "pearson",
+                             Freq = 0.50, Add.Id = NULL, background = NULL,  
                              diffusion.input.type = "probability", 
                              Unique.Annotation = FALSE, graph = NULL, K = NULL, 
                              score = "z", graph.name = "fella",
@@ -142,7 +146,7 @@ mWISE.annotation <- function(Peak.List, force.mass.range = TRUE,
   Annotated.Tab <- Annotated.List$Peak.Cpd
   clustered <- featuresClustering(Peak.List = Peak.List,
                                   Intensity.idx = Intensity.idx, 
-                                  Rt.05 = Rt.05,
+                                  Rt.05 = Rt.05, use = use, method = method,
                                   do.Par = do.Par, nClust = nClust)
   Annotated.Tab <- merge(Annotated.Tab,
                          clustered$Peak.List[,c("Peak.Id", "pcgroup")],

@@ -15,6 +15,8 @@ mWISE.annotation(
   Cpd.Add,
   Intensity.idx,
   Rt.05 = 5,
+  use = "everything",
+  method = "pearson",
   Freq = 0.5,
   Add.Id = NULL,
   background = NULL,
@@ -67,6 +69,9 @@ It can be "positive" or "negative".}
 index for the intensities}
 
 \item{Rt.05}{Retention time value to get a similarity of 0.5.}
+
+\item{method}{A character string indicating which correlation coefficient
+is to be computed. One of "pearson" (default), "kendall", or "spearman".}
 
 \item{Freq}{Minimum observed frequency to consider an 
 adduct or a fragment 

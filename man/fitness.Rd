@@ -4,7 +4,14 @@
 \alias{fitness}
 \title{optimization function}
 \usage{
-fitness(k, pca.to.tune, data.prep, IData)
+fitness(
+  k,
+  pca.to.tune,
+  data.prep,
+  IData,
+  use = "everything",
+  method = "pearson"
+)
 }
 \arguments{
 \item{k}{Number of eigenvectors to test}
@@ -14,6 +21,10 @@ fitness(k, pca.to.tune, data.prep, IData)
 \item{data.prep}{object returned by dataPrep function}
 
 \item{IData}{Intensity correlation data}
+
+\item{use}{An optional character string giving a method for computing correlations 
+in the presence of missing values. Default is "everything", but when
+missing values are present, "pairwise.complete.obs" is required.}
 }
 \value{
 Results for k optimization
