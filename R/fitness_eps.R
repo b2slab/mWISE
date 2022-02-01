@@ -11,13 +11,17 @@
 #' object returned by dataPrep function
 #' @param IData
 #' Intensity correlation data
+#' @param use
+#' An optional character string giving a method for computing correlations 
+#' in the presence of missing values. Default is "everything", but when
+#' missing values are present, "pairwise.complete.obs" is required. 
 #' @return 
 #' results for epsilon optimization
 #' @keywords internal
 #' @importFrom dbscan dbscan
 #' @importFrom plyr ldply llply
 #' @importFrom stats cor
-fitness.eps <- function(eps, pca.to.tune, k.tuned, data.prep, IData){
+fitness.eps <- function(eps, pca.to.tune, k.tuned, data.prep, IData, use = "everything"){
   dbscan.clustering <- dbscan::dbscan(x = pca.to.tune$x[,seq_len(k.tuned)], 
                                       eps = eps)
   
@@ -40,7 +44,7 @@ fitness.eps <- function(eps, pca.to.tune, k.tuned, data.prep, IData){
       rowMeans(IData[which(dbscan.clustering$cluster %in% c),], na.rm = TRUE)),]
   })
   #cor.mat <- n.Corr %>% t() %>% cor()
-  cor.mat <- cor(t(n.Corr), use = "pairwise.complete.obs")
+  cor.mat <- cor(t(n.Corr), use = use)
   cor.mat[upper.tri(x = cor.mat, diag = TRUE)] <- 0
   n <- sum(cor.mat>0.6)
   

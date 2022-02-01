@@ -22,6 +22,10 @@
 #' for the intensities
 #' @param Rt.05
 #' Retention time value to get a similarity of 0.5.
+#' @param use
+#' An optional character string giving a method for computing correlations 
+#' in the presence of missing values. Default is "everything", but when
+#' missing values are present, "pairwise.complete.obs" is required. 
 #' @param do.Par
 #' TRUE if parallel computing is required. Def: TRUE
 #' @param nClust
@@ -41,13 +45,13 @@
 #' @importFrom dbscan dbscan
 #' @importFrom stats prcomp
 
-featuresClustering <- function(Peak.List, Intensity.idx,
+featuresClustering <- function(Peak.List, Intensity.idx, use = "everything",
                                Rt.05 = 5, do.Par = TRUE, nClust) {
 
   cat("Preparing the data for clustering...")
   IData <- Peak.List[,Intensity.idx]
   Rt <- Peak.List$rt
-  data.prep <- dataPrep(IData = IData, Rt = Rt, Rt.05 = Rt.05)
+  data.prep <- dataPrep(IData = IData, Rt = Rt, Rt.05 = Rt.05, use = use)
   comb.mat.clustering <- sqrt(data.prep$Rt.sim*data.prep$I.sim)
   data.prep$Rt.sim <- data.prep$Rt.sim-diag(1,dim(data.prep$Rt.sim)[1],
                                             dim(data.prep$Rt.sim)[2])
@@ -64,11 +68,11 @@ featuresClustering <- function(Peak.List, Intensity.idx,
   cat("Computing optimized parameters for spectral clustering...")
   k.tuned <- k.optimization(pca.to.tune = pca.tune, data.prep = data.prep, 
                             IData = IData, nrow.List = nrow(Peak.List), 
-                            do.Par = do.Par, nClust = nClust)
+                            use = use, do.Par = do.Par, nClust = nClust)
   eps.tuned <- eps.optimization(pca.to.tune = pca.tune, 
                                 data.prep = data.prep, 
                                 IData = IData, k.tuned = k.tuned, 
-                                do.Par = do.Par, nClust = nClust)
+                                use = use, do.Par = do.Par, nClust = nClust)
   cat("DONE!","\n")
   cat("Clustering peaks...")
   Lapl.mat <- .LaplacianNg(mat = comb.mat.clustering)

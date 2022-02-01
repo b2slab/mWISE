@@ -28,7 +28,7 @@
 #' @importFrom stats dist
 #' 
 eps.optimization <- function(pca.to.tune, data.prep, IData, 
-                             k.tuned, do.Par, nClust) {
+                             use = "everything", k.tuned, do.Par, nClust) {
   if (do.Par){
     doParallel::registerDoParallel(nClust)
   }
@@ -45,7 +45,7 @@ eps.optimization <- function(pca.to.tune, data.prep, IData,
   res.opt <- plyr::ldply(eps.opt, function(e){
     res.opt <- fitness.eps(eps = e, pca.to.tune = pca.to.tune, 
                            k.tuned = k.tuned, IData = IData, 
-                           data.prep = data.prep)
+                           data.prep = data.prep, use = use)
     return(data.frame(k = e, t(res.opt)))
   },.parallel = do.Par)
 

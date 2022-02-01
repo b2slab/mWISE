@@ -14,6 +14,10 @@
 #' Vector containing the retention times.
 #' @param Rt.05
 #' Retention time value to get a similarity of 0.5.
+#' @param use
+#' An optional character string giving a method for computing correlations 
+#' in the presence of missing values. Default is "everything", but when
+#' missing values are present, "pairwise.complete.obs" is required. 
 #' @return
 #' Function \code{dataPrep} returns a list containing the 
 #' Gaussian similarity 
@@ -21,8 +25,8 @@
 #' and the intensities correlation.
 
 # data preparation
-dataPrep <- function(IData, Rt, Rt.05 = 5) {
-  I.sim <- cor(t(IData), use = "pairwise.complete.obs")
+dataPrep <- function(IData, Rt, Rt.05 = 5, use = "everything") {
+  I.sim <- cor(t(IData), use = use)
   I.dist <- (1-I.sim)/2
   I.05 <- 0.4
   I.05.dist <- (1-I.05)/2

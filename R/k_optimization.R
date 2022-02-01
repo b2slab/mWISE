@@ -25,14 +25,14 @@
 #' @importFrom plyr ldply
 
 k.optimization <- function(pca.to.tune, data.prep, IData, nrow.List, 
-                           do.Par=TRUE, nClust) {
+                           use = "everything", do.Par=TRUE, nClust) {
   if (do.Par){
     doParallel::registerDoParallel(nClust)
   }
 
   ks <- seq(2,(nrow.List/4), 20)
   res.opt <- plyr::ldply(ks, function(k){
-    res.opt <- fitness(k = k, pca.to.tune = pca.to.tune, 
+    res.opt <- fitness(k = k, pca.to.tune = pca.to.tune, use = use,
                        data.prep = data.prep, IData = IData)
     return(data.frame(k = k, t(res.opt)))
   },.parallel = do.Par)
